@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <style type="text/css">
+    body {
+      margin: 1em;
+    }
+
+    #info_box {
+      display: none; 
+      padding-top: 3em; 
+      font-size: 75%;
+    }
+
+    #save {
+      margin-top: 2em;
+    }
+
+    #local_container {
+      padding-top: 2em;
+      display: none;
+    }
+
+    #hlte_container {
+      padding-top: 2em;
+    }
+
+    #ephemeral {
+      display: none;
+      color: green;
+    }
+
+    #logo {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+
+    #set_uid {
+      size: 80%;
+    }
+    </style>
+  </head>
+
+  <body>
+    <form>
+      <div id="logo">
+        <img id="logo_img" src="https://static.hlte.net/icons8-crayon-64-blueedit.png" width=48 />
+      </div>
+
+      <div id="error_container" style="display: none;">
+        <h2>No backends were found!</h2>
+        <p>Unable to contact hlte.net main backend.</p>
+        <p>You can install the local backend by following X.</p>
+      </div>
+
+      <div id="form_container">
+        <input type="text" size=30 id="user_id" />
+        <button id="set_uid" type="submit">Set</button>
+        <br/>
+        <label>Unique identifier (email works well)</label>
+        
+        <div id="hlte_container">
+          <input type="checkbox" id="post_upstream" disabled="true" />
+          <label>Save upstream to hlte.net</label>
+        </div>
+
+        <div id="local_container">
+          <label>Local storage format(s):</label>
+          <br/>
+          <input type="checkbox" id="inf_csv" disabled="true" />
+          <label>CSV</label><br/>
+
+          <input type="checkbox" id="inf_json" disabled="true" />
+          <label>JSON</label><br/>
+
+          <input type="checkbox" id="inf_sqlite" disabled="true" />
+          <label>SQLite</label><br/>
+        </div>
+
+        <button id="save" type="submit" disabled="true">Save</button>
+      </div>
+
+      <div id="info_box">
+        <div id="info_container"></div>
+      </div>
+    </form>
+    <script src="shared.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>

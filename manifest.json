@@ -1,0 +1,33 @@
+{
+  "manifest_version": 2,
+  "name": "hlte.net",
+  "version": "0.1",
+  "description": "hlte.net browser extension",
+  "icons": {
+    "48": "icons/icons8-crayon-64-blueedit.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["shared.js", "hlte.js"]
+    }
+  ],
+  "permissions": [
+    "*://localhost/*",
+    "*://api.hlte.net/*",
+    "webRequest",
+    "storage"
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false,
+    "chrome_style": true,
+    "browser_style": true
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "hlte.net-development@electricsheep.co",
+      "strict_min_version": "42.0"
+    }
+  }
+}
