@@ -54,3 +54,48 @@ const discoverBackends = async (onFailure) => {
 
   return true;
 };
+
+const hlteOptions = async (toSet = undefined) => {
+  return new Promise((resolve) => {
+    if (toSet === undefined) {
+      theRealBrowser.storage.sync.get(null, (allSettings) => resolve(allSettings));
+    } else {
+      theRealBrowser.storage.sync.set(toSet, () => resolve());
+    }
+  });
+};
+
+const localFormats = async () => {
+  try {
+    const res = await fetch('http://localhost:56555/formats');
+
+    if (res.ok) {
+      return res.json();
+    }
+
+    throw `HTTP status ${res.status}`;
+  } catch (err) {
+    console.log(`formats req failed: ${err}`);
+    return [];
+  }
+};
+
+  // find an element in `curEle`'s children by 'data-id' attribute matching `dataId`
+const findChildByDataId = (dataId, curEle) => {
+  let rList = [];
+
+  if ('id' in curEle.dataset && curEle.dataset.id === dataId) {
+    rList.push(curEle);
+  }
+
+  if (curEle.childElementCount > 0) {
+    rList.push(...[...curEle.children].flatMap((child) => findChildByDataId(dataId, child))
+      .reduce((a, x) => { if (x) { a.push(x); } return a; }, []));
+  }
+
+  if (rList.length > 1) {
+    console.log(`warning: multiple elements for data-id="${dataId}" found for ${curEle}`);
+  }
+
+  return rList[0];
+};

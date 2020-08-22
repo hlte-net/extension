@@ -69,24 +69,23 @@
 
         <div id="local_container">
           <label>Local storage format(s):</label>
-          <br/>
-          <input type="checkbox" id="inf_csv" disabled="true" />
-          <label>CSV</label><br/>
-
-          <input type="checkbox" id="inf_json" disabled="true" />
-          <label>JSON</label><br/>
-
-          <input type="checkbox" id="inf_sqlite" disabled="true" />
-          <label>SQLite</label><br/>
+          <div id="local_formats">
+            <div id="local_format_tmpl" class="local_format" style="display: none;">
+              <input data-id="cbox" type="checkbox" disabled="true" />
+              <label data-id="label"></label>
+            </div>
+          </div>
         </div>
 
         <button id="save" type="submit" disabled="true">Save</button>
+        <button id="reset" type="submit" style="display: none;">Reset</button>
       </div>
 
       <div id="info_box">
         <div id="info_container"></div>
       </div>
     </form>
+
     <script src="shared.js"></script>
     <script src="options.js"></script>
   </body>

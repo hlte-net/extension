@@ -47,6 +47,14 @@ const addControls = (isError = null) => {
 
       let successes = 0;
       imgEle.style.filter = 'grayscale(1.0)';
+      const curFormats = Object.keys((await hlteOptions()).formats).reduce((a, x) => {
+        if (x.indexOf('inf_') === 0) {
+          a.push(x.replace('inf_', ''));
+        }
+        return a;
+      }, []);
+
+      console.log(curFormats);
 
       for (const beHostStub of Object.keys(backends)) {
         const res = await fetch(`${beHostStub}/`, {
@@ -54,7 +62,8 @@ const addControls = (isError = null) => {
           mode: 'cors',
           body: JSON.stringify({
             checksum: hexDigest,
-            payload: payload
+            payload: payload,
+            formats: curFormats
           })
         });
         
@@ -121,7 +130,6 @@ document.onselectstart = () => {
   };
 };
 
-//document.addEventListener('DOMContentLoaded', async () => {
 (async () => {
   await discoverBackends((failStr) => addControls(failStr));
   console.log(backends);
