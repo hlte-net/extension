@@ -47,30 +47,31 @@ const addControls = (isError = null) => {
 
       let successes = 0;
       imgEle.style.filter = 'grayscale(1.0)';
-      const curFormats = Object.keys((await hlteOptions()).formats).reduce((a, x) => {
-        if (x.indexOf('inf_') === 0) {
+      const curOpts = await hlteOptions();
+      const curFormats = Object.keys(curOpts.formats).reduce((a, x) => {
+        if (x.indexOf('inf_') === 0 && curOpts.formats[x] === true) {
           a.push(x.replace('inf_', ''));
         }
         return a;
       }, []);
 
-      console.log(curFormats);
-
       for (const beHostStub of Object.keys(backends)) {
-        const res = await fetch(`${beHostStub}/`, {
-          method: 'POST',
-          mode: 'cors',
-          body: JSON.stringify({
-            checksum: hexDigest,
-            payload: payload,
-            formats: curFormats
-          })
-        });
-        
-        console.log(res);
+        try {
+          const res = await fetch(`${beHostStub}/`, {
+            method: 'POST',
+            mode: 'cors',
+            body: JSON.stringify({
+              checksum: hexDigest,
+              payload: payload,
+              formats: curFormats
+            })
+          });
 
-        if (res.ok) {
-          ++successes;
+          if (res.ok) {
+            ++successes;
+          }
+        } catch (err) {
+          console.log(`fetch to ${beHostStub} failed: ${err}`);
         }
       }
 
