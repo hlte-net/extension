@@ -85,7 +85,7 @@ async function contentLoaded() {
         const label = findChildByDataId('label', newNode);
 
         checkbox.id = `inf_${format}`;
-        label.innerHTML = format;
+        label.appendChild(document.createTextNode(format));
         InputCheckboxes.push(checkbox.id);
 
         newNode.style.display = '';
@@ -100,7 +100,6 @@ async function contentLoaded() {
     }
 
     document.getElementById('info_box').style.display = 'block';
-    document.getElementById('info_container').innerHTML = `Backends: ${Object.keys(backends).join(', ')}`;
 
     restoreOptions();
   }
