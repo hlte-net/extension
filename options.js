@@ -96,9 +96,9 @@ async function contentLoaded() {
     const beList = document.getElementById('backend_list');
     beList.innerHTML = Object.keys(backends).reduce((accStr, beKey) => {
       const [reach, spec] = backends[beKey];
-      const lockStr = spec[1] ? ` <img src="icons/${assets.icons.lock}" class="keyicon"/> ` : '';
+      const lockStr = spec[1] ? ` <img src="icons/${assets.icons.lock}" title="Using HTTPS" class="keyicon"/> ` : '';
       const keyStr = reach && backends[beKey][1].length > 2 ? 
-          ` <img src="icons/${assets.icons.key}" class="keyicon"/> ` : '';
+          ` <img src="icons/${assets.icons.key}" title="Valid passphrase" class="keyicon"/> ` : '';
 
       return accStr += `<li>${!reach ? '<strike>' : ''}` +
         `${spec[0]}${!reach ? '</strike>' : ''}${lockStr}${keyStr}</li>`
