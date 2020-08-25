@@ -9,11 +9,27 @@
     }
 
     #info_box {
-      display: block; 
-      padding-top: 3em;
-      margin-bottom: 7px;
-      float: right;
+      display: block;
+      float: left;
+      position: absolute;
       font-size: 75%;
+      bottom: 1em;
+      right: 1.5em;
+    }
+
+    #err_show_box {
+      display: block;
+      float: left;
+      position: absolute;
+      font-size: 75%;
+      bottom: 1em;
+      left: 1.5em;
+    }
+
+    #spacer {
+      display: block;
+      width: 100%;
+      height: 3em;
     }
 
     #save {
@@ -36,6 +52,23 @@
       border: 2px solid black;
       border-radius: 3px;
       z-index: 999;
+    }
+
+    #err_box {
+      display: none;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 78%;
+      max-width: 315px;
+      max-height: 185px;
+      background: #ddd;
+      padding: 20px;
+      border: 2px solid black;
+      border-radius: 3px;
+      z-index: 999;
+      font-size: 0.75em;
+      overflow: scroll;
     }
 
     #ephemeral {
@@ -80,11 +113,17 @@
     #logo_img {
       display: none;
     }
+
+    .unreachable  {
+      text-decoration: line-through;
+      color: red;
+    }
     </style>
   </head>
 
   <body>
     <form>
+      <div id="err_box"></div>
       <div id="logo">
         <img id="logo_img" src="" width=32 />
       </div>
@@ -98,7 +137,7 @@
 
       <div id="form_container">
         <h3>Registered backends:</h3>
-        <div><ul id="backend_list"></ul></div>
+        <div><ol id="backend_list"></ol></div>
         <button id="add_be" type="submit">Add Backend</button>
 
         <div id="add_be_container">
@@ -118,17 +157,20 @@
         </div>
 
         <div id="local_container">
-          <h3>Local storage formats:</h3>
+          <h3>Available storage formats:</h3>
           <div id="local_formats">
-          </div>
-          <div id="local_format_tmpl" class="local_format" style="display: none;">
-            <input data-id="cbox" type="checkbox" disabled="true" />
-            <label data-id="label"></label>
           </div>
         </div>
 
         <button id="save" type="submit" disabled="true">Save</button>
         <button id="reset" type="submit">Reset</button>
+      </div>
+
+      <div id="spacer"></div>
+
+      <div id="err_show_box">
+        <button id="show_err" type="submit" style="display: none;">Show Errors</button>
+        <button id="hide_err" type="submit" style="display: none;">Hide Errors</button>
       </div>
 
       <div id="info_box">
@@ -138,6 +180,18 @@
       </div>
     </form>
 
+    <div style="display: none">
+      <div id="local_format_tmpl" class="local_format" style="display: none;">
+        <input data-id="cbox" type="checkbox" disabled="true" />
+        <label data-id="label"></label>
+      </div>
+
+      <li id="be_list_ele_tmpl">
+        <img data-id="keyicon" class="keyicon"/>
+        <img data-id="ppicon" class="keyicon"/>
+        <span data-id="be_name"></span>
+      </li>
+    </div>
     <script src="shared.js"></script>
     <script src="options.js"></script>
   </body>

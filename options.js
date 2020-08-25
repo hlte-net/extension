@@ -68,7 +68,7 @@ async function contentLoaded() {
     if (Object.keys(backends).some(x => x.indexOf('localhost') !== -1)) {
       const formatCont = document.getElementById('local_formats');
       const formatTmpl = document.getElementById('local_format_tmpl');
-      const formats = await localFormats();
+      const formats = await availableFormats();
 
       if (formats.length === 0) {
         return;
@@ -99,17 +99,82 @@ async function contentLoaded() {
     }
 
     const beList = document.getElementById('backend_list');
-    beList.innerHTML = Object.keys(backends).reduce((accStr, beKey) => {
+    const beListEleTmpl = document.getElementById('be_list_ele_tmpl');
+    Object.keys(backends).forEach((beKey) => {
       const [reach, spec] = backends[beKey];
-      const lockStr = spec[1] ? ` <img src="icons/${assets.icons.lock}" title="Using HTTPS" class="keyicon"/> ` : '';
-      const keyStr = reach && backends[beKey][1].length > 2 ? 
-          ` <img src="icons/${assets.icons.key}" title="Valid passphrase" class="keyicon"/> ` : '';
 
-      return accStr += `<li>${!reach ? '<strike>' : ''}` +
-        `${spec[0]}${!reach ? '</strike>' : ''}${lockStr}${keyStr}</li>`
-    }, '');
+      const newNode = beListEleTmpl.cloneNode(true);
+      newNode.removeAttribute('id');
+
+      const keyIconEle = findChildByDataId('keyicon', newNode);
+      const ppIconEle = findChildByDataId('ppicon', newNode);
+      const beNameEle = findChildByDataId('be_name', newNode);
+
+      beNameEle.appendChild(document.createTextNode(spec[0]));
+
+      if (spec[1]) {
+        keyIconEle.title = 'Uses HTTPS';
+        keyIconEle.src = `icons/${assets.icons.lock}`;
+      } else {
+        keyIconEle.title = 'Does not use HTTPS';
+        keyIconEle.src = `icons/${assets.icons.unlock}`;
+      }
+
+      if (!reach) {
+        beNameEle.className = 'unreachable';
+      }
+
+      if (reach && backends[beKey][1].length > 2) {
+        ppIconEle.title = 'Uses a passphrase';
+        ppIconEle.src = `icons/${assets.icons.key}`;
+      } else {
+        ppIconEle.title = 'Does not use a passphrase';
+        ppIconEle.src = `icons/${assets.icons.nokey}`;
+      }
+
+      beList.appendChild(newNode);
+    });
 
     restoreOptions();
+  }
+
+  const errorUp = () => {
+    const errBox = document.getElementById('err_box');
+
+    while (errBox.firstChild) {
+      errBox.removeChild(errBox.firstChild);
+    }
+
+    logger.errors().forEach((err) => {
+      errBox.appendChild(document.createTextNode(
+        `(${(new Date(err[1])).toLocaleString()}) ${err[0]}`));
+      errBox.appendChild(document.createElement('br'));
+    });
+
+    addOurClickListener('show_err', () => {
+      console.log('click show_err');
+      showErr.style.display = 'none';
+      hideErr.style.display = 'block';
+
+      errBox.style.display = 'block';
+    });
+
+    const showErr = document.getElementById('show_err');
+    const hideErr = document.getElementById('hide_err');
+
+    addOurClickListener('hide_err', () => {
+      console.log('click hide_err');
+      showErr.style.display = 'block';
+      hideErr.style.display = 'none';
+      errBox.style.display = 'none';
+    });
+
+    showErr.style.display = 'block';
+  };
+
+  logger.onError(errorUp);
+  if (logger.errors()) {
+    errorUp();
   }
 }
 
@@ -154,6 +219,7 @@ addOurClickListener('add_be_submit', async (ev) => {
     (await hexDigest('SHA-512', eles[2].value))], true);
   
   if (!addRes) {
+    logger.error(`failed to add backend '${eles[0].value}'`);
     setStatusIcon(assets.icons.error, { timeout: 7500 });
   } else {
     await saveOptions();

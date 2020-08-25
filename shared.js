@@ -20,8 +20,10 @@ const assets = {
     main: 'icons8-crayon-64-blueedit.png',
     error: 'icons8-crayon-64-blueedit-errored.png',
     ok: 'icons8-crayon-64-blueedit-ok.png',
-    key: 'icons8-password-1-24.png',
-    lock: 'icons8-lock-24.png'
+    key: 'icons8-key-32.png',
+    nokey: 'icons8-no-key-32.png',
+    lock: 'icons8-lock-32.png',
+    unlock: 'icons8-unlock-32.png'
   }
 };
 
@@ -41,6 +43,8 @@ const stubFromSpec = (spec) => {
 
 // if `passphrase` is set, will validate auth with it as well
 const checkVersion = async (hostStub, secure = false, passphrase) => {
+  const stub = stubFromSpec([hostStub, secure]);
+  
   try {
     const opts = { mode: 'cors' };
 
@@ -48,7 +52,7 @@ const checkVersion = async (hostStub, secure = false, passphrase) => {
       opts.headers = { 'x-hlte-pp': passphrase };
     }
 
-    const res = await fetch(`${stubFromSpec([hostStub, secure])}/version`, opts);
+    const res = await fetch(`${stub}/version`, opts);
 
     if (res.ok) {
       const txt = await res.text();
@@ -61,7 +65,7 @@ const checkVersion = async (hostStub, secure = false, passphrase) => {
       return true;
     }
   } catch (err) {
-    logger.error(`checkVersion request failed: ${err}`);
+    logger.error(`${stub}/version failed: ${err}`);
   }
 
   return false;
@@ -122,19 +126,36 @@ const hlteOptions = async (toSet = undefined) => {
   });
 };
 
-const localFormats = async () => {
-  try {
-    const res = await fetch('http://localhost:56555/formats');
+const availableFormats = async () => {
+  const formatsSet = new Set();
 
-    if (res.ok) {
-      return res.json();
+  for (const be of Object.values(backends)) {
+    const [reachable, spec] = be;
+
+    if (!reachable) {
+      continue;
     }
 
-    throw `HTTP status ${res.status}`;
-  } catch (err) {
-    logger.error(`formats req failed: ${err}`);
-    return [];
+    const opts = { mode: 'cors' };
+
+    if (spec.length > 2 && spec[2].length) {
+      opts.headers = { 'x-hlte-pp': spec[2] };
+    }
+
+    try {
+      const res = await fetch(`${stubFromSpec(spec)}/formats`, opts);
+
+      if (res.ok) {
+        (await res.json()).forEach(fmt => formatsSet.add(fmt));
+      } else {
+        throw `${stubFromSpec(spec)}/formats: HTTP status ${res.status}`;
+      }
+    } catch (err) {
+      logger.error(`formats req failed: ${err}`);
+    }
   }
+
+  return [...formatsSet];
 };
 
   // find an element in `curEle`'s children by 'data-id' attribute matching `dataId`
@@ -159,13 +180,14 @@ const findChildByDataId = (dataId, curEle) => {
 
 const logger = new class {
   constructor() {
+    this._onErr = undefined;
     this._logs = {};
     this._lvls = {
       log: console.log,
       error: console.error
     };
 
-    // creates logger.X for each level in _lvls
+    // creates logger.X where 'X' is each key in _lvls
     Object.keys(this._lvls).forEach((lvl) => this[lvl] = this._log.bind(this, lvl));
   }
 
@@ -180,5 +202,17 @@ const logger = new class {
 
     this._logs[lvl].push([msg, Date.now()]);
     this._lvls[lvl](msg);
+
+    if (lvl === 'error' && this._onErr) {
+      this._onErr(msg);
+    }
+  }
+
+  onError(cb) {
+    this._onErr = cb;
+  }
+
+  errors() {
+    return this._logs.error;
   }
 }();
