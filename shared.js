@@ -61,7 +61,7 @@ const checkVersion = async (hostStub, secure = false, passphrase) => {
       return true;
     }
   } catch (err) {
-    console.log('checkVersion request failed: ', err);
+    logger.error(`checkVersion request failed: ${err}`);
   }
 
   return false;
@@ -132,7 +132,7 @@ const localFormats = async () => {
 
     throw `HTTP status ${res.status}`;
   } catch (err) {
-    console.log(`formats req failed: ${err}`);
+    logger.error(`formats req failed: ${err}`);
     return [];
   }
 };
@@ -151,8 +151,34 @@ const findChildByDataId = (dataId, curEle) => {
   }
 
   if (rList.length > 1) {
-    console.log(`warning: multiple elements for data-id="${dataId}" found for ${curEle}`);
+    logger.error(`warning: multiple elements for data-id="${dataId}" found for ${curEle}`);
   }
 
   return rList[0];
 };
+
+const logger = new class {
+  constructor() {
+    this._logs = {};
+    this._lvls = {
+      log: console.log,
+      error: console.error
+    };
+
+    // creates logger.X for each level in _lvls
+    Object.keys(this._lvls).forEach((lvl) => this[lvl] = this._log.bind(this, lvl));
+  }
+
+  _log(lvl, msg) {
+    if (!this._lvls[lvl]) {
+      throw `bad log level '${lvl}'`;
+    }
+
+    if (!this._logs[lvl]) {
+      this._logs[lvl] = [];
+    }
+
+    this._logs[lvl].push([msg, Date.now()]);
+    this._lvls[lvl](msg);
+  }
+}();

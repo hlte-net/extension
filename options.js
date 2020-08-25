@@ -3,20 +3,28 @@
 const InputCheckboxes = [];
 
 let statusIconTimeoutHandle;
-function setStatusIcon(toIcon, timeoutToNormal = undefined) {
+function setStatusIcon(toIcon, opts) {
   const imgEle = document.getElementById('logo_img');
   const ogSrc = imgEle.src;
+  const { timeout, title } = opts;
 
+  imgEle.style.display = 'inline';
   imgEle.style.filter = 'grayscale(0)';
   imgEle.src = `${assetHost}/${toIcon}`;
   
+  if (title) {
+    imgEle.title = title;
+  }
+  
   clearTimeout(statusIconTimeoutHandle);
 
-  if (!statusIconTimeoutHandle && timeoutToNormal) {
+  if (!statusIconTimeoutHandle && timeout) {
     statusIconTimeoutHandle = setTimeout(() => {
       statusIconTimeoutHandle = undefined;
+      imgEle.style.display = 'none';
       imgEle.src = ogSrc;
-    }, timeoutToNormal);
+      imgEle.title = '';
+    }, timeout);
   }
 }
 
@@ -25,15 +33,12 @@ async function saveOptions() {
     return { [settingId]: document.getElementById(settingId).checked, ...a };
   }, {});
 
-  const imgEle = document.getElementById('logo_img');
-  imgEle.style.filter = 'grayscale(1.0)';
-
   const curOptions = await hlteOptions();
   curOptions.formats = settings;
   curOptions.backends = backends;
   await hlteOptions(curOptions);
 
-  setStatusIcon(assets.icons.ok, 2500);
+  setStatusIcon(assets.icons.ok, { timeout: 2500 });
 }
 
 const unlockAll = () => {
@@ -58,7 +63,7 @@ async function contentLoaded() {
   if (!(await discoverBackends())) {
     document.getElementById('form_container').style.display = 'none';
     document.getElementById('error_container').style.display = 'block';
-    document.getElementById('logo_img').src = `${assetHost}/${assets.icons.error}`;
+    setStatusIcon(assets.icons.error, { title: 'No backends found' });
   } else {
     if (Object.keys(backends).some(x => x.indexOf('localhost') !== -1)) {
       const formatCont = document.getElementById('local_formats');
@@ -149,7 +154,7 @@ addOurClickListener('add_be_submit', async (ev) => {
     (await hexDigest('SHA-512', eles[2].value))], true);
   
   if (!addRes) {
-    setStatusIcon(assets.icons.error, 7500);
+    setStatusIcon(assets.icons.error, { timeout: 7500 });
   } else {
     await saveOptions();
     contentLoaded();

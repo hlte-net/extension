@@ -29,7 +29,7 @@ const addControls = (isError = null) => {
       const payloadStr = JSON.stringify(payload);
       const digest = await hexDigest('SHA-256', payloadStr);
 
-      console.log(`${digest} -> ${payloadStr}`);
+      logger.log(`${digest} -> ${payloadStr}`);
       const imgEle = document.getElementById(`${contId}_img`);
       const imgReset = () => imgEle.style.filter = 'grayscale(0)';
 
@@ -82,7 +82,7 @@ const addControls = (isError = null) => {
             ++successes;
           }
         } catch (err) {
-          console.log(`fetch to ${beHostStub} failed: ${err}`);
+          logger.error(`fetch to ${beHostStub} failed: ${err}`);
         }
       }
 
