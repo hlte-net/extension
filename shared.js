@@ -11,7 +11,7 @@ try {
   }
 }
 
-const MIN_VER = 20200818;
+const MIN_VER = 20200824;
 const BE_SPEC = [['localhost:56555', false]];
 
 const assetHost = 'https://static.hlte.net';
@@ -27,10 +27,17 @@ const assets = {
 
 const backends = {};
 
+const hexDigest = async (algo, payloadStr) => {
+  const digest = await crypto.subtle.digest(algo,
+    new TextEncoder().encode(payloadStr));
+  return Array.from(new Uint8Array(digest))
+    .map(b => b.toString(16).padStart(2, '0')).join('');
+};
+
 const stubFromSpec = (spec) => {
   const [hostStub, secure] = spec;
   return `http${secure ? 's' : ''}://${hostStub}`;
-}
+};
 
 // if `passphrase` is set, will validate auth with it as well
 const checkVersion = async (hostStub, secure = false, passphrase) => {
@@ -46,10 +53,15 @@ const checkVersion = async (hostStub, secure = false, passphrase) => {
     if (res.ok) {
       const txt = await res.text();
       const numTxt = Number.parseInt(txt);
-      return !Number.isNaN(numTxt) && numTxt >= MIN_VER;
+
+      if (Number.isNaN(numTxt) || numTxt < MIN_VER) {
+        throw `version mismatch for ${hostStub}: '${txt}', expected '${MIN_VER}'`;
+      }
+
+      return true;
     }
   } catch (err) {
-    console.log('checkVersion request failed', err);
+    console.log('checkVersion request failed: ', err);
   }
 
   return false;

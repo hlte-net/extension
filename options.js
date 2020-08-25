@@ -83,7 +83,7 @@ async function contentLoaded() {
         const label = findChildByDataId('label', newNode);
 
         checkbox.id = `inf_${format}`;
-        label.appendChild(document.createTextNode(format));
+        label.appendChild(document.createTextNode(format.toUpperCase()));
         InputCheckboxes.push(checkbox.id);
 
         newNode.style.display = '';
@@ -145,7 +145,8 @@ const hideAddBeDialog = () => {
 
 addOurClickListener('add_be_submit', async (ev) => {
   eles.forEach(e => e.disabled = true);
-  const addRes = await addBackend([eles[0].value, eles[1].checked, eles[2].value], true);
+  const addRes = await addBackend([eles[0].value, eles[1].checked, 
+    (await hexDigest('SHA-512', eles[2].value))], true);
   
   if (!addRes) {
     setStatusIcon(assets.icons.error, 7500);

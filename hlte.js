@@ -25,14 +25,11 @@ const addControls = (isError = null) => {
         data: lastSelected,
         uri: window.location.toString().replace('#', '')
       };
+
       const payloadStr = JSON.stringify(payload);
+      const digest = await hexDigest('SHA-256', payloadStr);
 
-      const digest = await crypto.subtle.digest('SHA-256',
-        new TextEncoder().encode(payloadStr));
-      const hexDigest = Array.from(new Uint8Array(digest))
-        .map(b => b.toString(16).padStart(2, '0')).join(''); // [1]
-
-      console.log(`${hexDigest} -> ${payloadStr}`);
+      console.log(`${digest} -> ${payloadStr}`);
       const imgEle = document.getElementById(`${contId}_img`);
       const imgReset = () => imgEle.style.filter = 'grayscale(0)';
 
@@ -69,7 +66,7 @@ const addControls = (isError = null) => {
             method: 'POST',
             mode: 'cors',
             body: JSON.stringify({
-              checksum: hexDigest,
+              checksum: digest,
               payload: payload,
               formats: curFormats
             })
@@ -148,7 +145,3 @@ document.onselectstart = () => {
 (async () => {
   await discoverBackends((failStr) => addControls(failStr));
 })();
-
-
-
-// [1] https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest#
