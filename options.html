@@ -9,8 +9,10 @@
     }
 
     #info_box {
-      display: none; 
-      padding-top: 3em; 
+      display: block; 
+      padding-top: 3em;
+      margin-bottom: 7px;
+      float: right;
       font-size: 75%;
     }
 
@@ -19,12 +21,21 @@
     }
 
     #local_container {
-      padding-top: 2em;
+      padding-top: 0.5em;
       display: none;
     }
 
-    #hlte_container {
+    #add_be_container {
       padding-top: 2em;
+      display: none;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: #ddd;
+      padding: 20px;
+      border: 2px solid black;
+      border-radius: 3px;
+      z-index: 999;
     }
 
     #ephemeral {
@@ -41,6 +52,29 @@
     #set_uid {
       size: 80%;
     }
+    
+    label {
+      margin-top: 7px;
+    }
+
+    .add_be_label {
+      width: 70px;
+      display: inline-block;
+    }
+
+    li {
+      font-family: 'Courier New', Courier, monospace;
+    }
+
+    .keyicon {
+      width: 12px;
+      height: 12px;
+      margin-bottom: -2px;
+    }
+
+    h4 {
+      margin-top: 0;
+    }
     </style>
   </head>
 
@@ -52,33 +86,44 @@
 
       <div id="error_container" style="display: none;">
         <h2>No backends were found!</h2>
-        <p>Unable to contact hlte.net main backend.</p>
-        <p>You can install the local backend by following X.</p>
+        <br/>
+        <p>Please visit <a href="https://hlte.net" target="_blank">hlte.net</a>
+        for instructions on installing the local or deploying a remote backend.</p>
       </div>
 
       <div id="form_container">
-        <input type="text" size=30 id="user_id" />
-        <button id="set_uid" type="submit">Set</button>
-        <br/>
-        <label>Unique identifier (email works well)</label>
-        
-        <div id="hlte_container">
-          <input type="checkbox" id="post_upstream" disabled="true" />
-          <label>Save upstream to hlte.net</label>
+        <h3>Registered backends:</h3>
+        <div><ul id="backend_list"></ul></div>
+        <button id="add_be" type="submit">Add Backend</button>
+
+        <div id="add_be_container">
+          <h4>Add backend:</h4>
+          <label class="add_be_label">HTTPS?</label>
+          <input id="add_be_https" type="checkbox" />
+          </br>
+          <label class="add_be_label">Hostname</label>
+          <input type="text" size=30 id="add_be_hostname" placeholder="api.myhlteserver.example" />
+          <br/>
+          <label class="add_be_label"><i>Passphrase</i></label>
+          <input type="text" size=30 id="add_be_passphrase" placeholder="optional" />
+
+          <br/><br/>
+          <button id="add_be_submit" type="submit">Add</button>
+          <button id="add_be_cancel" type="submit">Cancel</button>
         </div>
 
         <div id="local_container">
-          <label>Local storage format(s):</label>
+          <h3>Local storage formats:</h3>
           <div id="local_formats">
-            <div id="local_format_tmpl" class="local_format" style="display: none;">
-              <input data-id="cbox" type="checkbox" disabled="true" />
-              <label data-id="label"></label>
-            </div>
+          </div>
+          <div id="local_format_tmpl" class="local_format" style="display: none;">
+            <input data-id="cbox" type="checkbox" disabled="true" />
+            <label data-id="label"></label>
           </div>
         </div>
 
         <button id="save" type="submit" disabled="true">Save</button>
-        <button id="reset" type="submit" style="display: none;">Reset</button>
+        <button id="reset" type="submit">Reset</button>
       </div>
 
       <div id="info_box">

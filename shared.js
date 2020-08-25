@@ -11,36 +11,76 @@ try {
   }
 }
 
-const MIN_VER = '20200816';
-const BE_SPEC = [['localhost:56555', false], ['api.hlte.net', true]];
+const MIN_VER = 20200818;
+const BE_SPEC = [['localhost:56555', false]];
 
 const assetHost = 'https://static.hlte.net';
 const assets = {
   icons: {
     main: 'icons8-crayon-64-blueedit.png',
     error: 'icons8-crayon-64-blueedit-errored.png',
-    ok: 'icons8-crayon-64-blueedit-ok.png'
+    ok: 'icons8-crayon-64-blueedit-ok.png',
+    key: 'icons8-password-1-24.png',
+    lock: 'icons8-lock-24.png'
   }
 };
 
 const backends = {};
 
-const checkVersion = async (hostStub, secure = false) => {
+const stubFromSpec = (spec) => {
+  const [hostStub, secure] = spec;
+  return `http${secure ? 's' : ''}://${hostStub}`;
+}
+
+// if `passphrase` is set, will validate auth with it as well
+const checkVersion = async (hostStub, secure = false, passphrase) => {
   try {
-    const res = await fetch(`http${secure ? 's' : ''}://${hostStub}/version`, { mode: 'cors' });
-    return res.ok && (await res.text()) >= MIN_VER;
-  } catch {
-    return false;
+    const opts = { mode: 'cors' };
+
+    if (passphrase) {
+      opts.headers = { 'x-hlte-pp': passphrase };
+    }
+
+    const res = await fetch(`${stubFromSpec([hostStub, secure])}/version`, opts);
+
+    if (res.ok) {
+      const txt = await res.text();
+      const numTxt = Number.parseInt(txt);
+      return !Number.isNaN(numTxt) && numTxt >= MIN_VER;
+    }
+  } catch (err) {
+    console.log('checkVersion request failed', err);
   }
+
+  return false;
 };
 
+const addBackend = async (spec, failIfCannotConnect = false) => {
+  const hStub = stubFromSpec(spec);
+
+  if (hStub in backends) {
+    return;
+  }
+
+  const verOk = await checkVersion(...spec);
+
+  if (!verOk && failIfCannotConnect) {
+    return false;
+  }
+
+  return (backends[hStub] = [verOk, spec]);
+}
+
 const discoverBackends = async (onFailure) => {
-  for (const spec of BE_SPEC) {
-    const verOk = await checkVersion(...spec);
-    if (verOk === true) {
-      const [hostStub, secure] = spec;
-      backends[`http${secure ? 's' : ''}://${hostStub}`] = true;
-    }
+  const opts = await hlteOptions();
+  let beSpec = BE_SPEC;
+
+  if (opts.backends) {
+    beSpec = Object.values(opts.backends).map(x => x[1]);
+  }
+
+  for (const spec of beSpec) {
+    await addBackend(spec);
   }
 
   if (Object.keys(backends).length === 0) {
@@ -57,6 +97,11 @@ const discoverBackends = async (onFailure) => {
 
 const hlteOptions = async (toSet = undefined) => {
   return new Promise((resolve) => {
+    if (toSet === null) {
+      theRealBrowser.storage.sync.clear();
+      return;
+    }
+    
     if (toSet === undefined) {
       theRealBrowser.storage.sync.get(null, (allSettings) => resolve(allSettings));
     } else {

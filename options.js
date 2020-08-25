@@ -1,6 +1,24 @@
 'use strict';
 
-const InputCheckboxes = ['post_upstream'];
+const InputCheckboxes = [];
+
+let statusIconTimeoutHandle;
+function setStatusIcon(toIcon, timeoutToNormal = undefined) {
+  const imgEle = document.getElementById('logo_img');
+  const ogSrc = imgEle.src;
+
+  imgEle.style.filter = 'grayscale(0)';
+  imgEle.src = `${assetHost}/${toIcon}`;
+  
+  clearTimeout(statusIconTimeoutHandle);
+
+  if (!statusIconTimeoutHandle && timeoutToNormal) {
+    statusIconTimeoutHandle = setTimeout(() => {
+      statusIconTimeoutHandle = undefined;
+      imgEle.src = ogSrc;
+    }, timeoutToNormal);
+  }
+}
 
 async function saveOptions() {
   const settings = InputCheckboxes.reduce((a, settingId) => {
@@ -12,14 +30,10 @@ async function saveOptions() {
 
   const curOptions = await hlteOptions();
   curOptions.formats = settings;
+  curOptions.backends = backends;
   await hlteOptions(curOptions);
 
-  const ogSrc = imgEle.src;
-  imgEle.style.filter = 'grayscale(0)';
-  imgEle.src = `${assetHost}/${assets.icons.ok}`;
-  setTimeout(() => {
-    imgEle.src = ogSrc;
-  }, 1500);
+  setStatusIcon(assets.icons.ok, 2500);
 }
 
 const unlockAll = () => {
@@ -38,27 +52,6 @@ async function restoreOptions() {
       }
     });
   }
-
-  const userId = allOpts.userId;
-
-  const uidEle = document.getElementById('user_id');
-  const setButton = document.getElementById('set_uid');
-  
-  if (userId && userId.length > 0) {
-    uidEle.value = userId;
-    uidEle.disabled = true;
-    setButton.style.display = 'none';
-    unlockAll();
-  } else {
-    setButton.addEventListener('click', async (ev) => {
-      ev.preventDefault();
-      if (uidEle.value.length > 0) {
-        allOpts.userId = uidEle.value;
-        await hlteOptions(allOpts);
-        //TODO: register uid! if extant, prompt for passphrase
-      }
-    });
-  }
 }
 
 async function contentLoaded() {
@@ -68,13 +61,18 @@ async function contentLoaded() {
     document.getElementById('logo_img').src = `${assetHost}/${assets.icons.error}`;
   } else {
     if (Object.keys(backends).some(x => x.indexOf('localhost') !== -1)) {
-      document.getElementById('local_container').style.display = 'block';
       const formatCont = document.getElementById('local_formats');
       const formatTmpl = document.getElementById('local_format_tmpl');
       const formats = await localFormats();
 
       if (formats.length === 0) {
         return;
+      }
+
+      document.getElementById('local_container').style.display = 'block';
+
+      while (formatCont.firstChild) {
+        formatCont.removeChild(formatCont.firstChild);
       }
 
       formats.forEach((format) => {
@@ -95,25 +93,70 @@ async function contentLoaded() {
       unlockAll();
     }
 
-    if (!Object.keys(backends).some(x => x.indexOf('api.hlte.net') !== -1)) {
-      document.getElementById('hlte_container').style.display = 'none';
-    }
+    const beList = document.getElementById('backend_list');
+    beList.innerHTML = Object.keys(backends).reduce((accStr, beKey) => {
+      const [reach, spec] = backends[beKey];
+      const lockStr = spec[1] ? ` <img src="icons/${assets.icons.lock}" class="keyicon"/> ` : '';
+      const keyStr = reach && backends[beKey][1].length > 2 ? 
+          ` <img src="icons/${assets.icons.key}" class="keyicon"/> ` : '';
 
-    document.getElementById('info_box').style.display = 'block';
+      return accStr += `<li>${!reach ? '<strike>' : ''}` +
+        `${spec[0]}${!reach ? '</strike>' : ''}${lockStr}${keyStr}</li>`
+    }, '');
 
     restoreOptions();
   }
 }
 
-document.getElementById('save').addEventListener('click', async (ev) => {
-  ev.preventDefault();
-  await saveOptions();
+const addOurClickListener = async (elementId, listener, defPrevent = true) => {
+  document.getElementById(elementId).addEventListener('click', async (ev) => {
+    if (defPrevent) {
+      ev.preventDefault();
+    }
+
+    await listener(ev);
+  });
+};
+
+addOurClickListener('save', async () => { await saveOptions(); });
+
+addOurClickListener('reset', async () => {
+  Object.keys(backends).forEach(k => delete backends[k]);
+  await hlteOptions(null);
+  await contentLoaded();
+}, false);
+
+addOurClickListener('add_be', async () => {
+  document.getElementById('add_be_container').style.display = 'inline';
 });
 
-document.getElementById('reset').addEventListener('click', async (ev) => {
-  ev.preventDefault();
-  await hlteOptions({ formats: [] });
-  await contentLoaded();
+const eles = [
+  document.getElementById('add_be_hostname'),
+  document.getElementById('add_be_https'),
+  document.getElementById('add_be_passphrase')
+];
+
+const hideAddBeDialog = () => {
+  eles[0].value = eles[2].value = '';
+  eles[1].checked = false;
+  eles.forEach(e => e.disabled = false);
+  document.getElementById('add_be_container').style.display = 'none';
+};
+
+addOurClickListener('add_be_submit', async (ev) => {
+  eles.forEach(e => e.disabled = true);
+  const addRes = await addBackend([eles[0].value, eles[1].checked, eles[2].value], true);
+  
+  if (!addRes) {
+    setStatusIcon(assets.icons.error, 7500);
+  } else {
+    await saveOptions();
+    contentLoaded();
+  }
+
+  hideAddBeDialog();
 });
+
+addOurClickListener('add_be_cancel', async (ev) => hideAddBeDialog());
 
 document.addEventListener('DOMContentLoaded', contentLoaded);

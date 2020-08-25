@@ -55,9 +55,17 @@ const addControls = (isError = null) => {
         return a;
       }, []);
 
-      for (const beHostStub of Object.keys(backends)) {
+      for (const beEnt of Object.entries(backends)) {
+        const [beHostStub, beSpec] = beEnt;
+
+        // skip registered backends that weren't found
+        // TODO: add option to always re-discover backends if any are `false` (not found) here
+        if (!beSpec[0]) {
+          continue;
+        }
+
         try {
-          const res = await fetch(`${beHostStub}/`, {
+          const opts = {
             method: 'POST',
             mode: 'cors',
             body: JSON.stringify({
@@ -65,7 +73,13 @@ const addControls = (isError = null) => {
               payload: payload,
               formats: curFormats
             })
-          });
+          };
+
+          if (beSpec[1].length > 2) {
+            opts.headers = { 'x-hlte-pp': beSpec[1][2] };
+          }
+
+          const res = await fetch(`${beHostStub}/`, opts);
 
           if (res.ok) {
             ++successes;
@@ -133,7 +147,6 @@ document.onselectstart = () => {
 
 (async () => {
   await discoverBackends((failStr) => addControls(failStr));
-  console.log(backends);
 })();
 
 
