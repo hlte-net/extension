@@ -216,3 +216,13 @@ const logger = new class {
     return this._logs.error;
   }
 }();
+
+const addOurClickListener = async (elementId, listener, defPrevent = true) => {
+  document.getElementById(elementId).addEventListener('click', async (ev) => {
+    if (defPrevent) {
+      ev.preventDefault();
+    }
+
+    await listener(ev);
+  });
+};

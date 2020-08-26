@@ -178,16 +178,6 @@ async function contentLoaded() {
   }
 }
 
-const addOurClickListener = async (elementId, listener, defPrevent = true) => {
-  document.getElementById(elementId).addEventListener('click', async (ev) => {
-    if (defPrevent) {
-      ev.preventDefault();
-    }
-
-    await listener(ev);
-  });
-};
-
 addOurClickListener('save', async () => { await saveOptions(); });
 
 addOurClickListener('reset', async () => {
