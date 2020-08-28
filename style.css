@@ -108,6 +108,11 @@ li {
   margin: 5px 0 5px 0;
 }
 
+#annotate_button {
+  float: right;
+  margin-bottom: 10px;
+}
+
 .keyicon {
   width: 12px;
   height: 12px;

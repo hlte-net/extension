@@ -75,7 +75,7 @@ const addBackend = async (spec, failIfCannotConnect = false) => {
   const hStub = stubFromSpec(spec);
 
   if (hStub in backends) {
-    return;
+    return true;
   }
 
   const verOk = await checkVersion(...spec);
@@ -95,8 +95,9 @@ const discoverBackends = async (onFailure) => {
     beSpec = Object.values(opts.backends).map(x => x[1]);
   }
 
+  let allAdded = true;
   for (const spec of beSpec) {
-    await addBackend(spec);
+    allAdded = (await addBackend(spec)) && allAdded;
   }
 
   if (Object.keys(backends).length === 0) {
@@ -110,6 +111,8 @@ const discoverBackends = async (onFailure) => {
 
   return true;
 };
+
+const isABackendReachable = () => Object.entries(backends).some(x => x[1][0]);
 
 const hlteOptions = async (toSet = undefined) => {
   return new Promise((resolve) => {
@@ -226,3 +229,73 @@ const addOurClickListener = async (elementId, listener, defPrevent = true) => {
     await listener(ev);
   });
 };
+
+function buildPayload(hiliteText, annotation, from) {
+  let loc = from || window.location;
+
+  const payload = {
+    data: hiliteText,
+    uri: loc.toString().replace('#', '')
+  };
+
+  if (annotation) {
+    payload.annotation = annotation;
+  }
+
+  return payload;
+}
+
+async function postToBackends(hiliteText, annotation, from) {
+  return postPayloadToBackends((await buildPayload(hiliteText, annotation, from)));
+}
+
+async function postPayloadToBackends(payload) {
+  const payloadStr = JSON.stringify(payload);
+  const digest = await hexDigest('SHA-256', payloadStr);
+
+  logger.log(`${digest} -> ${payloadStr}`);
+  const curOpts = await hlteOptions();
+  const curFormats = Object.keys(curOpts.formats).reduce((a, x) => {
+    if (x.indexOf('inf_') === 0 && curOpts.formats[x] === true) {
+      a.push(x.replace('inf_', ''));
+    }
+    return a;
+  }, []);
+
+  let successes = 0;
+  for (const beEnt of Object.entries(backends)) {
+    const [beHostStub, beSpec] = beEnt;
+
+    // skip registered backends that weren't found
+    // TODO: add option to always re-discover backends if any are `false` (not found) here
+    if (!beSpec[0]) {
+      continue;
+    }
+
+    try {
+      const opts = {
+        method: 'POST',
+        mode: 'cors',
+        body: JSON.stringify({
+          checksum: digest,
+          payload: payload,
+          formats: curFormats
+        })
+      };
+
+      if (beSpec[1].length > 2) {
+        opts.headers = { 'x-hlte-pp': beSpec[1][2] };
+      }
+
+      const res = await fetch(`${beHostStub}/`, opts);
+
+      if (res.ok) {
+        ++successes;
+      }
+    } catch (err) {
+      logger.error(`fetch to ${beHostStub} failed: ${err}`);
+    }
+  }
+
+  return successes == Object.keys(backends).length;
+}

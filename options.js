@@ -60,11 +60,16 @@ async function restoreOptions() {
 }
 
 async function contentLoaded() {
-  if (!(await discoverBackends())) {
+  document.getElementById('be_title').innerText = 'Verifying backends...';
+  const foundBes = await discoverBackends();
+  
+  if (!foundBes) {
     document.getElementById('form_container').style.display = 'none';
     document.getElementById('error_container').style.display = 'block';
     setStatusIcon(assets.icons.error, { title: 'No backends found' });
   } else {
+    document.getElementById('be_title').innerText = 'Registered backends:';
+
     if (Object.keys(backends).some(x => x.indexOf('localhost') !== -1)) {
       const formatCont = document.getElementById('local_formats');
       const formatTmpl = document.getElementById('local_format_tmpl');
@@ -99,6 +104,11 @@ async function contentLoaded() {
     }
 
     const beList = document.getElementById('backend_list');
+
+    while (beList.firstChild) {
+      beList.removeChild(beList.firstChild);
+    }
+
     const beListEleTmpl = document.getElementById('be_list_ele_tmpl');
     Object.keys(backends).forEach((beKey) => {
       const [reach, spec] = backends[beKey];
@@ -152,7 +162,6 @@ async function contentLoaded() {
     });
 
     addOurClickListener('show_err', () => {
-      console.log('click show_err');
       showErr.style.display = 'none';
       hideErr.style.display = 'block';
 
@@ -163,7 +172,6 @@ async function contentLoaded() {
     const hideErr = document.getElementById('hide_err');
 
     addOurClickListener('hide_err', () => {
-      console.log('click hide_err');
       showErr.style.display = 'block';
       hideErr.style.display = 'none';
       errBox.style.display = 'none';
@@ -207,16 +215,16 @@ addOurClickListener('add_be_submit', async (ev) => {
   eles.forEach(e => e.disabled = true);
   const addRes = await addBackend([eles[0].value, eles[1].checked, 
     (await hexDigest('SHA-512', eles[2].value))], true);
+
+  hideAddBeDialog();
   
   if (!addRes) {
     logger.error(`failed to add backend '${eles[0].value}'`);
     setStatusIcon(assets.icons.error, { timeout: 7500 });
   } else {
     await saveOptions();
-    contentLoaded();
+    await contentLoaded();
   }
-
-  hideAddBeDialog();
 });
 
 addOurClickListener('add_be_cancel', async (ev) => hideAddBeDialog());

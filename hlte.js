@@ -21,15 +21,6 @@ const addControls = (isError = null) => {
     hlButtonA.onclick = async (ev) => {
       ev.preventDefault();
 
-      const payload = {
-        data: lastSelected,
-        uri: window.location.toString().replace('#', '')
-      };
-
-      const payloadStr = JSON.stringify(payload);
-      const digest = await hexDigest('SHA-256', payloadStr);
-
-      logger.log(`${digest} -> ${payloadStr}`);
       const imgEle = document.getElementById(`${contId}_img`);
       const imgReset = () => imgEle.style.filter = 'grayscale(0)';
 
@@ -42,53 +33,13 @@ const addControls = (isError = null) => {
       hlButtonA.removeAttribute('href');
       hlButtonA.onclick = null;
 
-      let successes = 0;
       imgEle.style.filter = 'grayscale(1.0)';
-      const curOpts = await hlteOptions();
-      const curFormats = Object.keys(curOpts.formats).reduce((a, x) => {
-        if (x.indexOf('inf_') === 0 && curOpts.formats[x] === true) {
-          a.push(x.replace('inf_', ''));
-        }
-        return a;
-      }, []);
 
-      for (const beEnt of Object.entries(backends)) {
-        const [beHostStub, beSpec] = beEnt;
-
-        // skip registered backends that weren't found
-        // TODO: add option to always re-discover backends if any are `false` (not found) here
-        if (!beSpec[0]) {
-          continue;
-        }
-
-        try {
-          const opts = {
-            method: 'POST',
-            mode: 'cors',
-            body: JSON.stringify({
-              checksum: digest,
-              payload: payload,
-              formats: curFormats
-            })
-          };
-
-          if (beSpec[1].length > 2) {
-            opts.headers = { 'x-hlte-pp': beSpec[1][2] };
-          }
-
-          const res = await fetch(`${beHostStub}/`, opts);
-
-          if (res.ok) {
-            ++successes;
-          }
-        } catch (err) {
-          logger.error(`fetch to ${beHostStub} failed: ${err}`);
-        }
-      }
+      const success = await postToBackends(lastSelected);
 
       imgReset();
       clearTimeout(timeoutDispHandle);
-      let tempIcon = assets.icons[(successes === Object.keys(backends).length ? 'ok' : 'error')];
+      let tempIcon = assets.icons[(success ? 'ok' : 'error')];
       imgEle.src = `${assetHost}/${tempIcon}`;
       iconHoldHandle = setTimeout(() => {
         clearTimeout(iconHoldHandle);
