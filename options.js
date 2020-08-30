@@ -63,22 +63,18 @@ async function contentLoaded() {
   document.getElementById('be_title').innerText = 'Verifying backends...';
   const foundBes = await discoverBackends();
   
-  if (!foundBes) {
+  if (Object.keys(backends).length > 0 && !foundBes) {
     document.getElementById('form_container').style.display = 'none';
     document.getElementById('error_container').style.display = 'block';
     setStatusIcon(assets.icons.error, { title: 'No backends found' });
   } else {
     document.getElementById('be_title').innerText = 'Registered backends:';
 
-    if (Object.keys(backends).some(x => x.indexOf('localhost') !== -1)) {
-      const formatCont = document.getElementById('local_formats');
-      const formatTmpl = document.getElementById('local_format_tmpl');
-      const formats = await availableFormats();
+    const formatCont = document.getElementById('local_formats');
+    const formatTmpl = document.getElementById('local_format_tmpl');
+    const formats = await availableFormats();
 
-      if (formats.length === 0) {
-        return;
-      }
-
+    if (formats.length > 0) {
       document.getElementById('local_container').style.display = 'block';
 
       while (formatCont.firstChild) {
@@ -134,6 +130,7 @@ async function contentLoaded() {
         beNameEle.className = 'unreachable';
       }
 
+      console.log(backends[beKey][1].length, backends[beKey][1]);
       if (reach && backends[beKey][1].length > 2) {
         ppIconEle.title = 'Uses a passphrase';
         ppIconEle.src = `icons/${assets.icons.key}`;
@@ -141,6 +138,31 @@ async function contentLoaded() {
         ppIconEle.title = 'Does not use a passphrase';
         ppIconEle.src = `icons/${assets.icons.nokey}`;
       }
+
+      const delButton = findChildByDataId('delbutton', newNode);
+      const delButImg = findChildByDataId('delicon', delButton);
+
+      delButImg.src = `icons/${assets.icons.delete}`;
+      delButton.addEventListener('click', () => {
+        const conf = document.getElementById('be_del_confim_tmpl').cloneNode(true);
+        conf.removeAttribute('id');
+
+        findChildByDataId('be_name', conf).innerText = spec[0];
+        const clearConf = () => document.body.removeChild(conf);
+
+        findChildByDataId('y', conf).addEventListener('click', async () => {
+          delete backends[beKey];
+          await saveOptions();
+          await contentLoaded();
+          setStatusIcon(assets.icons.ok, { timeout: 1500 });
+          clearConf();
+        });
+
+        findChildByDataId('n', conf).addEventListener('click', clearConf);
+
+        conf.style.display = 'block';
+        document.body.appendChild(conf);
+      });
 
       beList.appendChild(newNode);
     });
@@ -213,8 +235,15 @@ const hideAddBeDialog = () => {
 
 addOurClickListener('add_be_submit', async (ev) => {
   eles.forEach(e => e.disabled = true);
-  const addRes = await addBackend([eles[0].value, eles[1].checked, 
-    (await hexDigest('SHA-512', eles[2].value))], true);
+
+  const ppVal = eles[2].value.trim();
+  const addBeArgs = [eles[0].value, eles[1].checked];
+
+  if (ppVal.length > 0) {
+    addBeArgs.push((await hexDigest('SHA-512', ppVal)));
+  }
+
+  const addRes = await addBackend(addBeArgs, true);
 
   hideAddBeDialog();
   

@@ -1,8 +1,8 @@
-
 body {
   margin: 1em;
   font-family: 'Helvetic Neue', Helvetica, Arial, sans-serif;
   font-weight: lighter;
+  min-height: 200px;
 }
 
 input, button {
@@ -43,9 +43,7 @@ input, button {
   display: none;
 }
 
-#add_be_container {
-  padding-top: 2em;
-  display: none;
+.popup_general {
   position: absolute;
   top: 20px;
   left: 20px;
@@ -56,19 +54,16 @@ input, button {
   z-index: 999;
 }
 
+#add_be_container {
+  padding-top: 2em;
+  display: none;
+}
+
 #err_box {
   display: none;
-  position: absolute;
-  top: 20px;
-  left: 20px;
   width: 78%;
   max-width: 315px;
   max-height: 185px;
-  background: #ddd;
-  padding: 20px;
-  border: 2px solid black;
-  border-radius: 3px;
-  z-index: 999;
   font-size: 0.75em;
   overflow: scroll;
 }
@@ -102,6 +97,10 @@ li {
   line-height: 1.5em;
 }
 
+.be_del_name {
+  font-family: 'Courier New', Courier, monospace;
+}
+
 #annotation {
   width: 250px;
   height: 75px;
@@ -130,4 +129,12 @@ h4 {
 .unreachable  {
   text-decoration: line-through;
   color: red;
+}
+
+.be_list_ele_tmpl {
+  list-style: none;
+}
+
+#backend_list {
+  padding-inline-start: 10px;
 }

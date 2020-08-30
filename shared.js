@@ -23,7 +23,8 @@ const assets = {
     key: 'icons8-key-32.png',
     nokey: 'icons8-no-key-32.png',
     lock: 'icons8-lock-32.png',
-    unlock: 'icons8-unlock-32.png'
+    unlock: 'icons8-unlock-32.png',
+    delete: 'icons8-trash-32.png'
   }
 };
 
@@ -141,7 +142,7 @@ const availableFormats = async () => {
 
     const opts = { mode: 'cors' };
 
-    if (spec.length > 2 && spec[2].length) {
+    if (spec.length > 2 && spec[2] && spec[2].length) {
       opts.headers = { 'x-hlte-pp': spec[2] };
     }
 

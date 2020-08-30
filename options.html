@@ -8,7 +8,7 @@
 
   <body>
     <form>
-      <div id="err_box"></div>
+      <div id="err_box" class="popup_general"></div>
       <div id="logo">
         <img id="logo_img" src="" width=32 />
       </div>
@@ -25,11 +25,11 @@
         <div><ol id="backend_list"></ol></div>
         <button id="add_be" type="submit">Add Backend</button>
 
-        <div id="add_be_container">
+        <div id="add_be_container" class="popup_general">
           <h4>Add backend:</h4>
           <label class="add_be_label">HTTPS?</label>
           <input id="add_be_https" type="checkbox" />
-          </br>
+          <br/>
           <label class="add_be_label">Hostname</label>
           <input type="text" size=30 id="add_be_hostname" placeholder="myhlteserver.example" />
           <br/>
@@ -71,11 +71,19 @@
         <label data-id="label"></label>
       </div>
 
-      <li id="be_list_ele_tmpl">
+      <li id="be_list_ele_tmpl" class="be_list_ele_tmpl">
+        <a href="#" data-id="delbutton"><img data-id="delicon" class="keyicon"/></a>
         <img data-id="keyicon" class="keyicon"/>
         <img data-id="ppicon" class="keyicon"/>
         <span data-id="be_name"></span>
       </li>
+
+      <div id="be_del_confim_tmpl" class="popup_general" style="display: none;">
+        Delete <span data-id="be_name" class="be_del_name"></span> backend?
+        <br/><br/>
+        <button type="button" data-id="y">Yes</button>
+        <button type="button" data-id="n">No</button>
+      </div>
     </div>
     <script src="shared.js"></script>
     <script src="options.js"></script>
