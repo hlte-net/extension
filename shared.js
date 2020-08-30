@@ -1,5 +1,7 @@
 'use strict';
 
+const MIN_VER = 20200824;
+
 let theRealBrowser;
 try {
   theRealBrowser = browser; // firefox
@@ -10,9 +12,6 @@ try {
     throw 'htle: cannot determine browser type';
   }
 }
-
-const MIN_VER = 20200824;
-const BE_SPEC = [['localhost:56555', false]];
 
 const assetHost = 'https://static.hlte.net';
 const assets = {
@@ -90,7 +89,7 @@ const addBackend = async (spec, failIfCannotConnect = false) => {
 
 const discoverBackends = async (onFailure) => {
   const opts = await hlteOptions();
-  let beSpec = BE_SPEC;
+  let beSpec = [];
 
   if (opts.backends) {
     beSpec = Object.values(opts.backends).map(x => x[1]);

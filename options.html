@@ -4,6 +4,12 @@
   <head>
     <meta charset="utf-8"/>
     <link href="style.css" rel="stylesheet" />
+
+    <style type="text/css">
+    BODY {
+      min-height: 200px;
+    }
+    </style>
   </head>
 
   <body>
@@ -58,6 +64,8 @@
         <button id="hide_err" type="submit" style="display: none;">Hide Errors</button>
       </div>
 
+      <div id="ver_box"></div>
+
       <div id="info_box">
         <div id="info_container">
           icons courtesy of <a href="https://icons8.com" target="_blank">icons8.com</a>
@@ -65,6 +73,7 @@
       </div>
     </form>
 
+    <!-- template objects; never make this container visible -->
     <div style="display: none">
       <div id="local_format_tmpl" class="local_format" style="display: none;">
         <input data-id="cbox" type="checkbox" disabled="true" />
@@ -78,7 +87,7 @@
         <span data-id="be_name"></span>
       </li>
 
-      <div id="be_del_confim_tmpl" class="popup_general" style="display: none;">
+      <div id="be_del_confim_tmpl" class="popup_general">
         Delete <span data-id="be_name" class="be_del_name"></span> backend?
         <br/><br/>
         <button type="button" data-id="y">Yes</button>

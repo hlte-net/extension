@@ -130,7 +130,6 @@ async function contentLoaded() {
         beNameEle.className = 'unreachable';
       }
 
-      console.log(backends[beKey][1].length, backends[beKey][1]);
       if (reach && backends[beKey][1].length > 2) {
         ppIconEle.title = 'Uses a passphrase';
         ppIconEle.src = `icons/${assets.icons.key}`;
@@ -143,6 +142,8 @@ async function contentLoaded() {
       const delButImg = findChildByDataId('delicon', delButton);
 
       delButImg.src = `icons/${assets.icons.delete}`;
+      delButImg.title = `Delete ${spec[0]}`;
+
       delButton.addEventListener('click', () => {
         const conf = document.getElementById('be_del_confim_tmpl').cloneNode(true);
         conf.removeAttribute('id');
@@ -258,4 +259,7 @@ addOurClickListener('add_be_submit', async (ev) => {
 
 addOurClickListener('add_be_cancel', async (ev) => hideAddBeDialog());
 
-document.addEventListener('DOMContentLoaded', contentLoaded);
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('ver_box').innerText = `version ${theRealBrowser.runtime.getManifest().version}.${MIN_VER}`;
+  contentLoaded();
+});

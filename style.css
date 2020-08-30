@@ -2,7 +2,6 @@ body {
   margin: 1em;
   font-family: 'Helvetic Neue', Helvetica, Arial, sans-serif;
   font-weight: lighter;
-  min-height: 200px;
 }
 
 input, button {
@@ -17,6 +16,17 @@ input, button {
   font-size: 75%;
   bottom: 1em;
   right: 1.5em;
+}
+
+#ver_box {
+  display: block;
+  float: right;
+  position: absolute;
+  font-size: 85%;
+  bottom: 2em;
+  right: 1.5em;
+  font-variant: small-caps;
+  margin-bottom: 3px;
 }
 
 #err_show_box {
