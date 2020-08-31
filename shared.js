@@ -1,6 +1,6 @@
 'use strict';
 
-const MIN_VER = 20200824;
+const MIN_VER = 20200830;
 
 let theRealBrowser;
 try {
@@ -230,7 +230,7 @@ const addOurClickListener = async (elementId, listener, defPrevent = true) => {
   });
 };
 
-function buildPayload(hiliteText, annotation, from) {
+function buildPayload(hiliteText, annotation, from, secondaryUrl) {
   let loc = from || window.location;
 
   const payload = {
@@ -242,19 +242,28 @@ function buildPayload(hiliteText, annotation, from) {
     payload.annotation = annotation;
   }
 
+  if (secondaryUrl) {
+    payload.secondaryURI = secondaryUrl;
+  }
+
   return payload;
 }
 
-async function postToBackends(hiliteText, annotation, from) {
-  return postPayloadToBackends((await buildPayload(hiliteText, annotation, from)));
+async function postToBackends(hiliteText, annotation, from, secondaryUrl) {
+  return postPayloadToBackends((await buildPayload(hiliteText, annotation, from, secondaryUrl)));
 }
 
 async function postPayloadToBackends(payload) {
+  const curOpts = await hlteOptions();
+
+  if (!curOpts.formats) {
+    alert('Cannot save hilite as you\'ve not yet enabled any output format options.');
+    return;
+  }
+
   const payloadStr = JSON.stringify(payload);
   const digest = await hexDigest('SHA-256', payloadStr);
 
-  logger.log(`${digest} -> ${payloadStr}`);
-  const curOpts = await hlteOptions();
   const curFormats = Object.keys(curOpts.formats).reduce((a, x) => {
     if (x.indexOf('inf_') === 0 && curOpts.formats[x] === true) {
       a.push(x.replace('inf_', ''));
@@ -297,5 +306,5 @@ async function postPayloadToBackends(payload) {
     }
   }
 
-  return successes == Object.keys(backends).length;
+  return successes > 0;
 }

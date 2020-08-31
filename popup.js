@@ -21,7 +21,6 @@ addOurClickListener('annotate_button', async () => {
   abled(false);
 
   theRealBrowser.tabs.query({ active: true, currentWindow: true }, async (t) => {
-    console.log('tabs ', t);
     if (t.length) {
       if (!(await postToBackends(null, val, t[0].url))) {
         logger.error('annotation failed');
@@ -38,5 +37,6 @@ addOurClickListener('annotate_button', async () => {
 
 document.addEventListener('DOMContentLoaded', async () => {
   await discoverBackends();
-  abled(isABackendReachable());
+  const opts = await hlteOptions();
+  abled(isABackendReachable() && !!opts.formats);
 });

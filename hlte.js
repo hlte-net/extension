@@ -1,6 +1,7 @@
 'use strict';
 
 const contId = 'hlteContainer';
+const mouseLoc = { x: -1, y: -1 };
 
 let iconHoldHandle;
 const addControls = (isError = null) => {
@@ -94,5 +95,74 @@ document.onselectstart = () => {
 };
 
 (async () => {
+  theRealBrowser.runtime.onMessage.addListener(async (msg) => {
+    const { pageUrl, srcUrl } = msg;
+    const imgAnCont = document.createElement('div');
+    const rmImgAnCont = () => document.body.removeChild(imgAnCont);
+
+    imgAnCont.style.fontSize = '0.8em';
+    imgAnCont.style.display = 'block';
+    imgAnCont.style.position = 'absolute';
+    imgAnCont.style.top = `${mouseLoc.y + 10}px`;
+    imgAnCont.style.left = `${mouseLoc.x + 10}px`;
+    imgAnCont.style.zIndex = '999';
+    imgAnCont.style.border = '1px solid black';
+    imgAnCont.style.borderRadius = '3px';
+    imgAnCont.style.width = '300px';
+    imgAnCont.style.heigh = '200px';
+    imgAnCont.style.background = 'rgba(221, 221, 221, 0.65)';
+    imgAnCont.style.padding = '11px';
+    imgAnCont.style.margin = '3px';
+    
+    const ta = document.createElement('textarea');
+    ta.style.marginBottom = '-5px';
+    ta.style.width = '95%';
+    ta.rows = 4;
+
+    const imgTxt = document.createElement('span');
+    imgTxt.style.fontStyle = 'italic';
+    imgTxt.style.fontSize = '0.6em';
+    imgTxt.appendChild(document.createTextNode(srcUrl.split('/').reverse()[0]));
+
+    const but = document.createElement('button');
+    but.innerText = 'Save annotation';
+    but.addEventListener('click', async () => {
+      const resp = await postToBackends(undefined, ta.value, srcUrl, pageUrl);
+
+      if (!resp) {
+        logger.error(`image annotation failed with payload ${ta.value},${srcUrl},${pageUrl}`);
+        alert('Annotation failed, please try again.');
+      }
+
+      rmImgAnCont();
+    });
+
+    const curOpts = await hlteOptions();
+    if (!curOpts.formats) {
+      but.innerText = 'Set format(s) in options to enable!';
+      but.disabled = true;
+    }
+
+    const cncl = document.createElement('button');
+    cncl.innerText = 'Cancel';
+    cncl.addEventListener('click', rmImgAnCont);
+
+    imgAnCont.appendChild(document.createTextNode(`Image annotation:`));
+    imgAnCont.appendChild(document.createElement('br'));
+    imgAnCont.appendChild(ta);
+    imgAnCont.appendChild(document.createElement('br'));
+    imgAnCont.appendChild(imgTxt);
+    imgAnCont.appendChild(document.createElement('br'));
+    imgAnCont.appendChild(but);
+    imgAnCont.appendChild(document.createTextNode(' '));
+    imgAnCont.appendChild(cncl);
+    document.body.appendChild(imgAnCont);
+  });
+
+  document.onmousemove = (ev) => {
+    mouseLoc.x = ev.pageX;
+    mouseLoc.y = ev.pageY;
+  };
+  
   await discoverBackends((failStr) => addControls(failStr));
 })();

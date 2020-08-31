@@ -64,6 +64,10 @@ input, button {
   z-index: 999;
 }
 
+#img_annotate {
+  display: block;
+}
+
 #add_be_container {
   padding-top: 2em;
   display: none;

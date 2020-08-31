@@ -4,6 +4,8 @@
   "version": "0.2",
   "description": "hlte.net browser extension",
   "icons": {
+    "16": "icons/icons8-crayon-16-blueedit.png",
+    "32": "icons/icons8-crayon-64-blueedit.png",
     "48": "icons/icons8-crayon-64-blueedit.png"
   },
   "content_scripts": [
@@ -12,12 +14,16 @@
       "js": ["shared.js", "hlte.js"]
     }
   ],
+  "background": {
+    "scripts": ["shared.js", "bg.js"],
+    "persistent": true
+  },
   "permissions": [
-    "*://localhost/*",
-    "*://api.hlte.net/*",
+    "*://*/*",
     "webRequest",
     "storage",
-    "tabs"
+    "tabs",
+    "contextMenus"
   ],
   "options_ui": {
     "page": "options.html",

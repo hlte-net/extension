@@ -1,0 +1,23 @@
+'use strict';
+
+theRealBrowser.runtime.onInstalled.addListener(() => {
+  theRealBrowser.contextMenus.create({
+    title: 'Annotate image',
+    contexts: ['image'],
+    visible: true,
+    id: 'ctx_menu',
+    onclick: async (info) => {
+      const { pageUrl, srcUrl } = info;
+      const msgObj = { action: 'annotateImage', pageUrl, srcUrl };
+
+      theRealBrowser.tabs.query({ active: true }, async (t) => {
+        theRealBrowser.tabs.sendMessage(t.find(x => x.active).id, msgObj);
+      });
+    }
+  },
+  () => {
+    if (theRealBrowser.runtime.lastError) {
+      console.error('ctx created?', theRealBrowser.runtime.lastError);
+    }
+  });
+});
