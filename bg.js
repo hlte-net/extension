@@ -2,8 +2,8 @@
 
 theRealBrowser.runtime.onInstalled.addListener(() => {
   theRealBrowser.contextMenus.create({
-    title: 'Annotate image',
-    contexts: ['image'],
+    title: 'Annotate media',
+    contexts: ['image', 'video'],
     visible: true,
     id: 'ctx_menu',
     onclick: async (info) => {

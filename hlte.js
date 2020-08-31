@@ -147,7 +147,7 @@ document.onselectstart = () => {
     cncl.innerText = 'Cancel';
     cncl.addEventListener('click', rmImgAnCont);
 
-    imgAnCont.appendChild(document.createTextNode(`Image annotation:`));
+    imgAnCont.appendChild(document.createTextNode(`Annotation:`));
     imgAnCont.appendChild(document.createElement('br'));
     imgAnCont.appendChild(ta);
     imgAnCont.appendChild(document.createElement('br'));
