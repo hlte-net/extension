@@ -260,6 +260,6 @@ addOurClickListener('add_be_submit', async (ev) => {
 addOurClickListener('add_be_cancel', async (ev) => hideAddBeDialog());
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('ver_box').innerText = `version ${theRealBrowser.runtime.getManifest().version}.${MIN_VER}`;
+  document.getElementById('ver_box').innerText = `v${theRealBrowser.runtime.getManifest().version}.${MIN_VER}`;
   contentLoaded();
 });
