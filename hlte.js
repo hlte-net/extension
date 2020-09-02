@@ -14,7 +14,7 @@ const addControls = (isError = null) => {
   cont.style.position = 'fixed';
   cont.style.left = '10px';
   cont.style.top = '5px';
-  cont.style.zIndex = '999999';
+  cont.style.zIndex = '2147483647';
 
   const hlButtonA = document.createElement('a');
   if (!isError) {
@@ -105,7 +105,7 @@ document.onselectstart = () => {
     imgAnCont.style.position = 'absolute';
     imgAnCont.style.top = `${mouseLoc.y + 10}px`;
     imgAnCont.style.left = `${mouseLoc.x + 10}px`;
-    imgAnCont.style.zIndex = '999';
+    imgAnCont.style.zIndex = '2147483647';
     imgAnCont.style.border = '1px solid black';
     imgAnCont.style.borderRadius = '3px';
     imgAnCont.style.width = '300px';
