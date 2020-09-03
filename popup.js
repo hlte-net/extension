@@ -36,6 +36,18 @@ addOurClickListener('annotate_button', async () => {
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // if the user has selected text, automatically populate the annotation text area with it quoted
+  theRealBrowser.tabs.query({ active: true }, async (t) => {
+    const tId = t.find(x => x.active).id;
+    theRealBrowser.tabs.sendMessage(tId, { action: 'queryLastSelected' }, async (lsResp) => {
+      if (!lsResp || theRealBrowser.runtime.lastError) {
+        console.error(`queryLastSelected failed: ${JSON.stringify(theRealBrowser.runtime.lastError)}`);
+      } else if (lsResp && 'response' in lsResp) {
+        document.getElementById('annotation').value = `"${lsResp.response}"`;
+      }
+    });
+  });
+  
   await discoverBackends();
   const opts = await hlteOptions();
   abled(isABackendReachable() && !!opts.formats);

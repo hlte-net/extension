@@ -95,6 +95,7 @@ document.onselectstart = () => {
 };
 
 const msgHandlers = {
+  queryLastSelected: async (_) => ({ response: lastSelected }),
   annotateMedia: async (msg) => {
     const { pageUrl, srcUrl } = msg;
     const imgAnCont = document.createElement('div');
@@ -178,11 +179,16 @@ const msgHandlers = {
 };
 
 (async () => {
-  theRealBrowser.runtime.onMessage.addListener(async (msg) => {
+  theRealBrowser.runtime.onMessage.addListener(async (msg, _, sendResponse) => {
     const { action } = msg;
 
     if (action && action in msgHandlers) {
-      await msgHandlers[action](msg);
+      let handlerResp = await msgHandlers[action](msg);
+
+      if (handlerResp) {
+        sendResponse(handlerResp);
+        return true; // tells the browser to retain/keep-open the channel
+      }
     } else {
       console.error(`unhandled msg type '${action}'`);
     }
@@ -193,5 +199,5 @@ const msgHandlers = {
     mouseLoc.y = ev.pageY;
   };
   
-  await discoverBackends((failStr) => addControls(failStr));
+  discoverBackends((failStr) => addControls(failStr));
 })();

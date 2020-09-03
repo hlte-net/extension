@@ -1,6 +1,7 @@
 'use strict';
 
 const MIN_VER = 20200830;
+const PP_HDR = 'x-hlte-pp';
 
 let theRealBrowser;
 try {
@@ -49,7 +50,7 @@ const checkVersion = async (hostStub, secure = false, passphrase) => {
     const opts = { mode: 'cors' };
 
     if (passphrase) {
-      opts.headers = { 'x-hlte-pp': passphrase };
+      opts.headers = { [PP_HDR]: passphrase };
     }
 
     const res = await fetch(`${stub}/version`, opts);
@@ -142,7 +143,7 @@ const availableFormats = async () => {
     const opts = { mode: 'cors' };
 
     if (spec.length > 2 && spec[2] && spec[2].length) {
-      opts.headers = { 'x-hlte-pp': spec[2] };
+      opts.headers = { [PP_HDR]: spec[2] };
     }
 
     try {
@@ -293,7 +294,7 @@ async function postPayloadToBackends(payload) {
       };
 
       if (beSpec[1].length > 2) {
-        opts.headers = { 'x-hlte-pp': beSpec[1][2] };
+        opts.headers = { [PP_HDR]: beSpec[1][2] };
       }
 
       const res = await fetch(`${beHostStub}/`, opts);
