@@ -23,7 +23,8 @@
     "webRequest",
     "storage",
     "tabs",
-    "contextMenus"
+    "contextMenus",
+    "activeTab"
   ],
   "options_ui": {
     "page": "options.html",
@@ -44,5 +45,10 @@
     },
     "default_popup": "popup.html",
     "browser_style": true
-  }
+  },
+  "web_accessible_resources": [
+    "icons/*.png",
+    "style.css",
+    "*.js"
+  ]
 }
