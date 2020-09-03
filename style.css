@@ -152,3 +152,11 @@ h4 {
 #backend_list {
   padding-inline-start: 10px;
 }
+
+.blockquote {
+  margin: '0.5em 1.5em 0px';
+  font-family: 'monospace';
+  font-size: '1.1em';
+  border: '2px solid #83d0f2';
+  border-width: '2px 0';
+}

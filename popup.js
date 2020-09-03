@@ -1,5 +1,7 @@
 'use strict';
 
+let capturedSelected;
+
 const abled = (en) => {
   const a = document.getElementById('annotation');
 
@@ -22,7 +24,7 @@ addOurClickListener('annotate_button', async () => {
 
   theRealBrowser.tabs.query({ active: true, currentWindow: true }, async (t) => {
     if (t.length) {
-      if (!(await postToBackends(null, val, t[0].url))) {
+      if (!(await postToBackends(capturedSelected, val, t[0].url))) {
         logger.error('annotation failed');
         return;
       }
@@ -39,11 +41,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   // if the user has selected text, automatically populate the annotation text area with it quoted
   theRealBrowser.tabs.query({ active: true }, async (t) => {
     const tId = t.find(x => x.active).id;
+    
     theRealBrowser.tabs.sendMessage(tId, { action: 'queryLastSelected' }, async (lsResp) => {
       if (!lsResp || theRealBrowser.runtime.lastError) {
         console.error(`queryLastSelected failed: ${JSON.stringify(theRealBrowser.runtime.lastError)}`);
-      } else if (lsResp && 'response' in lsResp) {
-        document.getElementById('annotation').value = `"${lsResp.response}"`;
+      } else if ('response' in lsResp && lsResp.response) {
+        capturedSelected = lsResp.response;
+
+        const bq = document.createElement('blockquote');
+        bq.style.width = document.getElementById('annotation').style.width;
+        bq.innerText = `"${capturedSelected}"`;
+
+        document.getElementById('anno_sel').appendChild(bq);
+        document.getElementById('ann_label').innerText = 'Annotation this page with hilite:';
       }
     });
   });

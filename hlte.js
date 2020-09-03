@@ -186,8 +186,18 @@ const msgHandlers = {
       let handlerResp = await msgHandlers[action](msg);
 
       if (handlerResp) {
-        sendResponse(handlerResp);
-        return true; // tells the browser to retain/keep-open the channel
+        // firefox & chrome behave differently here:
+        // firefox expects the response returned by the listener, whereas chrome
+        // (contrary to some of its documentation) expects the response be transported
+        // by the third argument (`sendResponse`) and `true` be returned by the listener
+        // to indicate the message channel must remain open after this listener returns.
+        if (IAMFF) {
+          return handlerResp;
+        }
+        else {
+          sendResponse(handlerResp);
+          return true; // tells the browser to retain/keep-open the channel
+        }
       }
     } else {
       console.error(`unhandled msg type '${action}'`);

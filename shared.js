@@ -2,10 +2,12 @@
 
 const MIN_VER = 20200830;
 const PP_HDR = 'x-hlte-pp';
+let IAMFF = false; // only set if browser is Firefox
 
 let theRealBrowser;
 try {
   theRealBrowser = browser; // firefox
+  IAMFF = true;
 } catch {
   if (chrome) {
     theRealBrowser = chrome; // and opera
