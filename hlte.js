@@ -99,6 +99,7 @@ const msgHandlers = {
     const { pageUrl, srcUrl } = msg;
     const imgAnCont = document.createElement('div');
     const rmImgAnCont = () => document.body.removeChild(imgAnCont);
+    imgAnCont.id = 'media_annotate_popup';
 
     imgAnCont.style.fontSize = '0.8em';
     imgAnCont.style.display = 'block';
@@ -110,28 +111,25 @@ const msgHandlers = {
     imgAnCont.style.borderRadius = '3px';
     imgAnCont.style.width = '300px';
     imgAnCont.style.heigh = '200px';
-    imgAnCont.style.background = 'rgba(221, 221, 221, 0.65)';
+    imgAnCont.style.background = 'rgba(211, 233, 243, 0.95)';
     imgAnCont.style.padding = '11px';
     imgAnCont.style.margin = '3px';
     
     const ta = document.createElement('textarea');
-    ta.style.marginBottom = '-5px';
+    ta.style.margin = '0.5em 0 0.5em 0';
     ta.style.width = '95%';
     ta.rows = 4;
-
-    if (lastSelected && lastSelected.length) {
-      ta.value = `"${lastSelected}"`;
-    }
 
     const imgTxt = document.createElement('span');
     imgTxt.style.fontStyle = 'italic';
     imgTxt.style.fontSize = '0.6em';
     imgTxt.appendChild(document.createTextNode(srcUrl.split('/').reverse()[0]));
 
+    let buttonCaptureHilite;
     const but = document.createElement('button');
     but.innerText = 'Save annotation';
     but.addEventListener('click', async () => {
-      const resp = await postToBackends(undefined, ta.value, srcUrl, pageUrl);
+      const resp = await postToBackends(buttonCaptureHilite, ta.value, srcUrl, pageUrl);
 
       if (!resp) {
         logger.error(`image annotation failed with payload ${ta.value},${srcUrl},${pageUrl}`);
@@ -155,6 +153,21 @@ const msgHandlers = {
     imgAnCont.appendChild(document.createElement('br'));
     imgAnCont.appendChild(ta);
     imgAnCont.appendChild(document.createElement('br'));
+
+    if (lastSelected && lastSelected.length) {
+      buttonCaptureHilite = lastSelected;
+      imgAnCont.appendChild(document.createTextNode(`Including hilite:`));
+      const bq = document.createElement('blockquote');
+      bq.style.margin = '0.5em 1.5em 0px';
+      bq.style.fontFamily = 'monospace';
+      bq.style.fontSize = '1.1em';
+      bq.style.border = '2px solid #83d0f2';
+      bq.style.borderWidth = '2px 0';
+      bq.appendChild(document.createTextNode(`"${buttonCaptureHilite}"`));
+      imgAnCont.appendChild(bq);
+      imgAnCont.appendChild(document.createElement('br'));
+    }
+
     imgAnCont.appendChild(imgTxt);
     imgAnCont.appendChild(document.createElement('br'));
     imgAnCont.appendChild(but);
