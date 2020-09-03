@@ -8,7 +8,7 @@ theRealBrowser.runtime.onInstalled.addListener(() => {
     id: 'ctx_menu',
     onclick: async (info) => {
       const { pageUrl, srcUrl } = info;
-      const msgObj = { action: 'annotateImage', pageUrl, srcUrl };
+      const msgObj = { action: 'annotateMedia', pageUrl, srcUrl };
 
       theRealBrowser.tabs.query({ active: true }, async (t) => {
         theRealBrowser.tabs.sendMessage(t.find(x => x.active).id, msgObj);

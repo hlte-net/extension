@@ -94,8 +94,8 @@ document.onselectstart = () => {
   };
 };
 
-(async () => {
-  theRealBrowser.runtime.onMessage.addListener(async (msg) => {
+const msgHandlers = {
+  annotateMedia: async (msg) => {
     const { pageUrl, srcUrl } = msg;
     const imgAnCont = document.createElement('div');
     const rmImgAnCont = () => document.body.removeChild(imgAnCont);
@@ -118,6 +118,10 @@ document.onselectstart = () => {
     ta.style.marginBottom = '-5px';
     ta.style.width = '95%';
     ta.rows = 4;
+
+    if (lastSelected && lastSelected.length) {
+      ta.value = `"${lastSelected}"`;
+    }
 
     const imgTxt = document.createElement('span');
     imgTxt.style.fontStyle = 'italic';
@@ -157,6 +161,18 @@ document.onselectstart = () => {
     imgAnCont.appendChild(document.createTextNode(' '));
     imgAnCont.appendChild(cncl);
     document.body.appendChild(imgAnCont);
+  }
+};
+
+(async () => {
+  theRealBrowser.runtime.onMessage.addListener(async (msg) => {
+    const { action } = msg;
+
+    if (action && action in msgHandlers) {
+      await msgHandlers[action](msg);
+    } else {
+      console.error(`unhandled msg type '${action}'`);
+    }
   });
 
   document.onmousemove = (ev) => {
