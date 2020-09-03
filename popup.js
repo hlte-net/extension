@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         bq.innerText = `"${capturedSelected}"`;
 
         document.getElementById('anno_sel').appendChild(bq);
-        document.getElementById('ann_label').innerText = 'Annotation this page with hilite:';
+        document.getElementById('ann_label').innerText = 'Annotate this page with hilite:';
       }
     });
   });
