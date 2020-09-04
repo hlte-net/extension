@@ -44,18 +44,51 @@ const stubFromSpec = (spec) => {
   return `http${secure ? 's' : ''}://${hostStub}`;
 };
 
-// if `passphrase` is set, will validate auth with it as well
-const checkVersion = async (hostStub, secure = false, passphrase) => {
-  const stub = stubFromSpec([hostStub, secure]);
-  
-  try {
-    const opts = { mode: 'cors' };
-
-    if (passphrase) {
-      opts.headers = { [PP_HDR]: passphrase };
+const hlteFetch = async (endpoint, spec, payload = undefined) => {
+  const opts = { 
+    mode: 'cors',
+    headers: {
+      'Access-Control-Request-Headers': PP_HDR
     }
+  };
 
-    const res = await fetch(`${stub}/version`, opts);
+  if (spec.length > 2 && spec[2].length > 0) {
+    opts.headers[PP_HDR] = spec[2];
+  }
+
+  if (payload) {
+    const payloadStr = JSON.stringify(payload);
+    const digest = await hexDigest('SHA-256', payloadStr);
+
+    const curOpts = await hlteOptions();
+
+    if (!curOpts.formats) {
+      alert('Cannot save hilite as you\'ve not yet enabled any output format options.');
+      return;
+    }
+    
+    const curFormats = Object.keys(curOpts.formats).reduce((a, x) => {
+      if (x.indexOf('inf_') === 0 && curOpts.formats[x] === true) {
+        a.push(x.replace('inf_', ''));
+      }
+      return a;
+    }, []);
+
+    opts.method = 'POST';
+    opts.body = JSON.stringify({
+      checksum: digest,
+      payload: payload,
+      formats: curFormats
+    });
+  }
+
+  return fetch(`${stubFromSpec(spec)}${endpoint}`, opts);
+};
+
+// if `passphrase` is set, will validate auth with it as well
+const checkVersion = async (spec) => {
+  try {
+    const res = await hlteFetch('/version', spec);
 
     if (res.ok) {
       const txt = await res.text();
@@ -68,7 +101,7 @@ const checkVersion = async (hostStub, secure = false, passphrase) => {
       return true;
     }
   } catch (err) {
-    logger.error(`${stub}/version failed: ${err}`);
+    logger.error(`${hostStub[0]}/version failed: ${err}`);
   }
 
   return false;
@@ -81,7 +114,7 @@ const addBackend = async (spec, failIfCannotConnect = false) => {
     return true;
   }
 
-  const verOk = await checkVersion(...spec);
+  const verOk = await checkVersion(spec);
 
   if (!verOk && failIfCannotConnect) {
     return false;
@@ -142,14 +175,8 @@ const availableFormats = async () => {
       continue;
     }
 
-    const opts = { mode: 'cors' };
-
-    if (spec.length > 2 && spec[2] && spec[2].length) {
-      opts.headers = { [PP_HDR]: spec[2] };
-    }
-
     try {
-      const res = await fetch(`${stubFromSpec(spec)}/formats`, opts);
+      const res = await hlteFetch('/formats', spec);
 
       if (res.ok) {
         (await res.json()).forEach(fmt => formatsSet.add(fmt));
@@ -257,23 +284,6 @@ async function postToBackends(hiliteText, annotation, from, secondaryUrl) {
 }
 
 async function postPayloadToBackends(payload) {
-  const curOpts = await hlteOptions();
-
-  if (!curOpts.formats) {
-    alert('Cannot save hilite as you\'ve not yet enabled any output format options.');
-    return;
-  }
-
-  const payloadStr = JSON.stringify(payload);
-  const digest = await hexDigest('SHA-256', payloadStr);
-
-  const curFormats = Object.keys(curOpts.formats).reduce((a, x) => {
-    if (x.indexOf('inf_') === 0 && curOpts.formats[x] === true) {
-      a.push(x.replace('inf_', ''));
-    }
-    return a;
-  }, []);
-
   let successes = 0;
   for (const beEnt of Object.entries(backends)) {
     const [beHostStub, beSpec] = beEnt;
@@ -285,21 +295,7 @@ async function postPayloadToBackends(payload) {
     }
 
     try {
-      const opts = {
-        method: 'POST',
-        mode: 'cors',
-        body: JSON.stringify({
-          checksum: digest,
-          payload: payload,
-          formats: curFormats
-        })
-      };
-
-      if (beSpec[1].length > 2) {
-        opts.headers = { [PP_HDR]: beSpec[1][2] };
-      }
-
-      const res = await fetch(`${beHostStub}/`, opts);
+      const res = await hlteFetch('/', beSpec[1], payload);
 
       if (res.ok) {
         ++successes;
