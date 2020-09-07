@@ -62,7 +62,6 @@ const hlteFetch = async (endpoint, spec, payload = undefined) => {
   if (payload) {
     const payloadStr = JSON.stringify(payload);
     const digest = await hexDigest('SHA-256', payloadStr);
-
     const curOpts = await hlteOptions();
 
     if (!curOpts.formats) {
@@ -271,13 +270,8 @@ function buildPayload(hiliteText, annotation, from, secondaryUrl) {
     uri: loc.toString().replace('#', '')
   };
 
-  if (annotation) {
-    payload.annotation = annotation;
-  }
-
-  if (secondaryUrl) {
-    payload.secondaryURI = secondaryUrl;
-  }
+  payload.annotation = annotation && annotation.length ? annotation : '';
+  payload.secondaryURI = secondaryUrl && secondaryUrl.length ? secondaryUrl : '';
 
   return payload;
 }
