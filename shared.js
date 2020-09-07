@@ -1,6 +1,6 @@
 'use strict';
 
-const MIN_VER = 20200830;
+const MIN_VER = 20200970;
 const PP_HDR = 'x-hlte-pp';
 let IAMFF = false; // only set if browser is Firefox
 
