@@ -3,6 +3,12 @@
   "name": "hlte.net",
   "version": "0.2",
   "description": "hlte.net browser extension",
+  "author": "Electric Sheep Co.",
+  "homepage_url": "https://hlte.net",
+  "developer": {
+    "name": "Electric Sheep Co.",
+    "url": "https://hlte.net"
+  },
   "icons": {
     "16": "icons/icons8-crayon-16-blueedit.png",
     "32": "icons/icons8-crayon-64-blueedit.png",
