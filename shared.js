@@ -16,6 +16,10 @@ try {
   }
 }
 
+if (!crypto.subtle) {
+  crypto.subtle = { digest: async () => new Promise((res) => res("")) };
+}
+
 const assetHost = 'https://static.hlte.net';
 const assets = {
   icons: {
@@ -33,8 +37,7 @@ const assets = {
 const backends = {};
 
 const hexDigest = async (algo, payloadStr) => {
-  const digest = await crypto.subtle.digest(algo,
-    new TextEncoder().encode(payloadStr));
+  const digest = await crypto.subtle.digest(algo, new TextEncoder().encode(payloadStr));
   return Array.from(new Uint8Array(digest))
     .map(b => b.toString(16).padStart(2, '0')).join('');
 };
@@ -95,13 +98,13 @@ const checkVersion = async (spec) => {
       const numTxt = Number.parseInt(txt);
 
       if (Number.isNaN(numTxt) || numTxt < MIN_VER) {
-        throw `version mismatch for ${hostStub}: '${txt}', expected '${MIN_VER}'`;
+        throw `version mismatch for ${spec[0]}: '${txt}', expected '${MIN_VER}'`;
       }
 
       return true;
     }
   } catch (err) {
-    logger.error(`${hostStub[0]}/version failed: ${err}`);
+    logger.error(`${spec[0]}/version failed: ${err}`);
   }
 
   return false;
