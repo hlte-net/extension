@@ -50,6 +50,7 @@ const stubFromSpec = (spec) => {
 const hlteFetch = async (endpoint, spec, payload = undefined) => {
   const opts = { 
     mode: 'cors',
+    cache: 'no-store',
     headers: {
       'Access-Control-Request-Headers': PP_HDR
     }
@@ -59,9 +60,14 @@ const hlteFetch = async (endpoint, spec, payload = undefined) => {
     opts.headers[PP_HDR] = spec[2];
   }
 
+  let uri = `${stubFromSpec(spec)}${endpoint}`;
+
   if (payload) {
-    const payloadStr = JSON.stringify(payload);
-    const digest = await hexDigest('SHA-256', payloadStr);
+    opts.method = 'POST';
+    opts.body = JSON.stringify(payload);
+    opts.headers['Content-Type'] = 'application/json';
+
+    const digest = await hexDigest('SHA-256', opts.body);
     const curOpts = await hlteOptions();
 
     if (!curOpts.formats) {
@@ -76,15 +82,17 @@ const hlteFetch = async (endpoint, spec, payload = undefined) => {
       return a;
     }, []);
 
-    opts.method = 'POST';
-    opts.body = JSON.stringify({
-      checksum: digest,
-      payload: payload,
-      formats: curFormats
-    });
+    const params = new URLSearchParams()
+    params.append('formats', curFormats);
+
+    if (digest.length == 64) {
+      params.append('checksum', digest);
+    }
+
+    uri += `?${params.toString()}`;
   }
 
-  return fetch(`${stubFromSpec(spec)}${endpoint}`, opts);
+  return fetch(uri, opts);
 };
 
 // if `passphrase` is set, will validate auth with it as well
