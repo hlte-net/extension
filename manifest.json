@@ -40,7 +40,7 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "dev@hlte.net",
+      "id": "hello@hlte.net",
       "strict_min_version": "48.0",
       "update_url": "https://updates.hlte.net/main.json"
     }

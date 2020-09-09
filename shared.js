@@ -1,6 +1,6 @@
 'use strict';
 
-const MIN_VER = 20200970;
+const BE_PIN_VER = 20200970;
 const PP_HDR = 'x-hlte-pp';
 let IAMFF = false; // only set if browser is Firefox
 
@@ -104,8 +104,8 @@ const checkVersion = async (spec) => {
       const txt = await res.text();
       const numTxt = Number.parseInt(txt);
 
-      if (Number.isNaN(numTxt) || numTxt < MIN_VER) {
-        throw `version mismatch for ${spec[0]}: '${txt}', expected '${MIN_VER}'`;
+      if (Number.isNaN(numTxt) || numTxt != BE_PIN_VER) {
+        throw `version mismatch for ${spec[0]}: '${txt}', expected '${BE_PIN_VER}'`;
       }
 
       return true;
@@ -275,7 +275,7 @@ function buildPayload(hiliteText, annotation, from, secondaryUrl) {
 
   const payload = {
     data: hiliteText,
-    uri: loc.toString().replace('#', '')
+    uri: loc.toString()
   };
 
   payload.annotation = annotation && annotation.length ? annotation : '';
