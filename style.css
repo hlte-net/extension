@@ -221,6 +221,11 @@ h4 {
   max-width: 768px;
 }
 
+video, img {
+  max-width: 752px;
+  max-height: 752px;
+}
+
 #search_res_info {
   text-align: center;
   margin: 0.3em;

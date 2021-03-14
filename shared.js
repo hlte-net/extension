@@ -95,7 +95,7 @@ const hlteFetch = async (endpoint, spec, payload = undefined, query = undefined)
   }
 
 
-  if ([...params.values()].length) {
+  if (params.toString().length) {
     uri += `?${params.toString()}`;
   }
   
