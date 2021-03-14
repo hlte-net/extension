@@ -47,7 +47,7 @@ const stubFromSpec = (spec) => {
   return `http${secure ? 's' : ''}://${hostStub}`;
 };
 
-const hlteFetch = async (endpoint, spec, payload = undefined) => {
+const hlteFetch = async (endpoint, spec, payload = undefined, query = undefined) => {
   const opts = { 
     mode: 'cors',
     cache: 'no-store',
@@ -61,6 +61,11 @@ const hlteFetch = async (endpoint, spec, payload = undefined) => {
   }
 
   let uri = `${stubFromSpec(spec)}${endpoint}`;
+  let params = new URLSearchParams();
+
+  if (query) {
+    params = new URLSearchParams(query);
+  }
 
   if (payload) {
     opts.method = 'POST';
@@ -82,16 +87,18 @@ const hlteFetch = async (endpoint, spec, payload = undefined) => {
       return a;
     }, []);
 
-    const params = new URLSearchParams()
     params.append('formats', curFormats);
 
     if (digest.length == 64) {
       params.append('checksum', digest);
     }
-
-    uri += `?${params.toString()}`;
   }
 
+
+  if ([...params.values()].length) {
+    uri += `?${params.toString()}`;
+  }
+  
   return fetch(uri, opts);
 };
 

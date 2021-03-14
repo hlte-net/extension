@@ -6,8 +6,7 @@
     <link href="style.css" rel="stylesheet" />
 
     <style type="text/css">
-    BODY {
-      min-height: 200px;
+    div {
     }
     </style>
   </head>
@@ -15,6 +14,7 @@
   <body>
     <form>
       <div id="err_box" class="popup_general"></div>
+
       <div id="logo">
         <img id="logo_img" src="" width=32 />
       </div>
@@ -26,53 +26,66 @@
         for instructions on installing the local or deploying a remote backend.</p>
       </div>
 
-      <div id="form_container">
-        <h3 id="be_title"></h3>
-        <div><ol id="backend_list"></ol></div>
-        <button id="add_be" type="submit">Add Backend</button>
-
-        <div id="add_be_container" class="popup_general">
-          <h4>Add backend:</h4>
-          <label class="add_be_label">HTTPS?</label>
+      <div id="add_be_container" class="popup_general bordered">
+        <h3 style="margin: 0 1em;">Add backend:</h3>
+        <label class="add_be_label">HTTPS?
           <input id="add_be_https" type="checkbox" />
-          <br/>
-          <label class="add_be_label">Hostname</label>
+        </label>
+        <br/>
+        <label class="add_be_label">Hostname:
           <input type="text" size=30 id="add_be_hostname" placeholder="myhlteserver.example" />
-          <br/>
-          <label class="add_be_label">Passphrase</label>
-          <input type="text" size=30 id="add_be_passphrase" placeholder="optional" />
+        </label>
+        <br/>
+        <label class="add_be_label">Passphrase:
+          <input type="password" size=30 id="add_be_passphrase" placeholder="optional" />
+        </label>
 
-          <br/><br/>
-          <button id="add_be_submit" type="submit">Add</button>
-          <button id="add_be_cancel" type="submit">Cancel</button>
+        <br/><br/>
+        <button id="add_be_submit" type="submit">Add</button>
+        <button id="add_be_cancel" type="submit">Cancel</button>
+      </div>
+
+      <div id="form_container" class="row-dir">
+        <div id="backends_cont" class="col-dir ctrl-box bordered">
+          <h3 id="be_title"></h3>
+          <div><ol id="backend_list"></ol></div>
+          <button id="add_be" type="submit">Add Backend</button>
         </div>
 
-        <div id="local_container">
+        <div id="storage_formats" class="col-dir ctrl-box bordered">
           <h3>Available storage formats:</h3>
           <div id="local_formats">
           </div>
+
+          <button id="save" type="submit" disabled="true">Save</button>
+          <button id="reset" type="submit">Reset</button>
         </div>
-
-        <button id="save" type="submit" disabled="true">Save</button>
-        <button id="reset" type="submit">Reset</button>
       </div>
-
-      <div id="spacer"></div>
 
       <div id="err_show_box">
         <button id="show_err" type="submit" style="display: none;">Show Errors</button>
         <button id="hide_err" type="submit" style="display: none;">Hide Errors</button>
       </div>
-
-      <div id="ver_box"></div>
-
-      <div id="info_box">
-        <div id="info_container">
-          <a href="https://hlte.net" target="_blank">hlte.net</a> is built by <a href="https://electricsheep.co" target="_blank">electric sheep</a><br/>
-          icons courtesy of <a href="https://icons8.com" target="_blank">icons8.com</a>
-        </div>
-      </div>
     </form>
+
+    <div style="width: 100%;" class="row-dir">
+      <div class="col-dir ctrl-box bordered">
+        <h3 id="query_title">Search:
+          <input type="text" id="search_in" style="margin: 0 0 7px 7px;" >
+        </h3>
+        <div id="search_res_info" class="col-dir"></div>
+        <div id="search_res" class="col-dir"></div>
+      </div>
+    </div>
+
+    <div id="ver_box"></div>
+
+    <div id="info_box">
+      <div id="info_container" class="col-dir">
+        <div class="algn-r dsp-i">built by&nbsp;<a href="https://electricsheep.co" target="_blank">electric sheep</a></div>
+        <div class="algn-r dsp-i">icons courtesy of&nbsp;<a href="https://icons8.com" target="_blank">icons8.com</a></div>
+      </div>
+    </div>
 
     <!-- template objects; never make this container visible -->
     <div style="display: none">
@@ -93,6 +106,15 @@
         <br/><br/>
         <button type="button" data-id="y">Yes</button>
         <button type="button" data-id="n">No</button>
+      </div>
+
+      <div id="search_res_row_tmpl" class="col-dir-r search_res_row bordered">
+        <div class="row-dir" style="justify-content: space-between;">
+          <div data-id="srr_ts"></div>
+          <div data-id="srr_uris"></div>
+        </div>
+        <div><blockquote data-id="srr_hilite"></blockquote></div>
+        <div data-id="srr_ann"></div>
       </div>
     </div>
     <script src="shared.js"></script>

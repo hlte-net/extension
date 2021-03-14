@@ -1,7 +1,17 @@
 body {
-  margin: 1em;
   font-family: 'Helvetic Neue', Helvetica, Arial, sans-serif;
   font-weight: lighter;
+  min-height: 200px;
+}
+
+div {
+  display: flex;
+}
+
+h3 {
+  text-align: center;
+  font-variant: small-caps;
+  border-bottom: 1px dotted rgb(15, 15, 85);
 }
 
 input, button {
@@ -10,11 +20,10 @@ input, button {
 }
 
 #info_box {
-  display: block;
   float: left;
   position: absolute;
   font-size: 75%;
-  bottom: 1em;
+  top: 0.2em;
   right: 1.5em;
   text-align: right;
   line-height: 1.5em;
@@ -24,8 +33,7 @@ input, button {
   display: block;
   position: absolute;
   font-size: 85%;
-  top: 0.5em;
-  right: 1em;
+  top: 0.2em;
   font-variant: small-caps;
   color: #999;
 }
@@ -49,9 +57,21 @@ input, button {
   margin-top: 2em;
 }
 
+#form_container {
+  width: 100%;
+}
+
 #local_container {
   padding-top: 0.5em;
   display: none;
+}
+
+.local_format {
+  margin: 0.5em;
+}
+
+.local_format input {
+  margin-left: 3px;
 }
 
 .popup_general {
@@ -68,9 +88,15 @@ input, button {
   display: block;
 }
 
+.bordered {
+  border: 1px dotted rgb(15, 15, 85);
+  border-radius: 0.5em;
+}
+
 #add_be_container {
   padding-top: 2em;
   display: none;
+  width: 218px;
 }
 
 #err_box {
@@ -159,4 +185,51 @@ h4 {
   font-size: '1.1em';
   border: '2px solid #83d0f2';
   border-width: '2px 0';
+}
+
+.col-dir {
+  flex-direction: column;
+}
+
+.col-dir-r {
+  flex-direction: column-reverse;
+}
+
+.row-dir {
+  flex-direction: row;
+}
+
+.ctrl-box {
+  padding: 1em;
+  margin: 0.5em;
+}
+
+.algn-r {
+  text-align: right;
+}
+
+.dsp-i {
+  display: inline;
+}
+
+.search_res_row {
+  margin: 0.4em;
+  padding: 0.6em;
+}
+
+#search_res {
+  max-width: 768px;
+}
+
+#search_res_info {
+  text-align: center;
+  margin: 0.3em;
+  font-size: 1.2em;
+}
+
+blockquote {
+  font-size: 1.1em;
+  background-color: rgb(253, 249, 229);
+  padding: 1em;
+  border-left: 5px solid rgb(98, 134, 163);
 }

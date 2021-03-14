@@ -75,8 +75,6 @@ async function contentLoaded() {
     const formats = await availableFormats();
 
     if (formats.length > 0) {
-      document.getElementById('local_container').style.display = 'block';
-
       while (formatCont.firstChild) {
         formatCont.removeChild(formatCont.firstChild);
       }
@@ -90,6 +88,7 @@ async function contentLoaded() {
 
         checkbox.id = `inf_${format}`;
         label.appendChild(document.createTextNode(format.toUpperCase()));
+        label.appendChild(checkbox);
         InputCheckboxes.push(checkbox.id);
 
         newNode.style.display = '';
@@ -167,6 +166,58 @@ async function contentLoaded() {
 
       beList.appendChild(newNode);
     });
+
+    const searchIn = document.getElementById('search_in');
+    searchIn.addEventListener('keydown', async (e) => {
+      if (e.code === 'Enter') {
+        searchIn.disabled = true;
+        const srEle = document.getElementById('search_res');
+        while (srEle.firstChild) {
+          srEle.removeChild(srEle.firstChild);
+        }
+
+        for (const beEnt of Object.entries(backends)) {
+          const [_, beSpec] = beEnt;
+          const res = await hlteFetch('/search', beSpec[1], undefined, { q: searchIn.value });
+        
+          if (res.ok) {
+            try {
+              const rJson = await res.json();
+              const rowTmpl = document.getElementById('search_res_row_tmpl')
+
+              rJson.forEach((row) => {
+                const newRow = rowTmpl.cloneNode(true);
+                const nrC = (cid) => findChildByDataId(cid, newRow);
+                newRow.removeAttribute('id');
+
+                nrC('srr_ts').innerText = new Date(Number.parseInt(row.timestamp) / 1e6).toLocaleString();
+                const pURL = new URL(row.primaryURI);
+                nrC('srr_uris').innerHTML = `<a href="${row.primaryURI}" target="_blank">${pURL.hostname}</a>`;
+
+                if (row.secondaryURI && row.secondaryURI.length) {
+                  const sURL = new URL(row.secondaryURI);
+                  nrC('srr_uris').innerHTML += `&nbsp;(<a href="${row.secondaryURI}" target="_blank">${sURL.hostname}</a>)`;
+                }
+
+                nrC('srr_hilite').innerText = row.hilite;
+
+                if (row.annotation && row.annotation.length) {
+                  nrC('srr_ann').innerText = row.annotation;
+                }
+
+                srEle.appendChild(newRow);
+              })
+
+              document.getElementById('search_res_info').innerText = `${rJson.length} results`;
+            } catch (err) {
+              logger.error(`failed to parse query result: ${err}`);
+            }
+          }
+        }
+
+        searchIn.disabled = false;
+      }
+    })
 
     restoreOptions();
   }
