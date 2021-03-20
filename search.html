@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <link href="style.css" rel="stylesheet" />
+
+    <style type="text/css">
+    div {
+    }
+    </style>
+  </head>
+
+  <body>
+    <div id="err_box" class="popup_general"></div>
+
+    <div id="logo">
+      <img id="logo_img" src="" width=32 />
+    </div>
+
+    <div id="error_container" style="display: none;">
+      <h2>No backends were found!</h2>
+      <br/>
+      <p>Please visit <a href="https://hlte.net" target="_blank">hlte.net</a>
+      for instructions on installing the local or deploying a remote backend.</p>
+    </div>
+
+    <div id="search_main_cont" style="width: 100%;" class="row-dir">
+      <div class="col-dir ctrl-box bordered">
+        <h3 id="query_title">Search:
+          <input type="text" id="search_in" style="margin: 0 0 7px 7px;" >
+        </h3>
+        <div id="search_res_info" class="col-dir"></div>
+        <div id="search_res" class="col-dir"></div>
+      </div>
+    </div>
+
+    <div id="ver_box"></div>
+
+    <div id="info_box">
+      <div id="info_container" class="col-dir">
+        <div class="algn-r dsp-i">built by&nbsp;<a href="https://electricsheep.co" target="_blank">electric sheep</a></div>
+        <div class="algn-r dsp-i">icons courtesy of&nbsp;<a href="https://icons8.com" target="_blank">icons8.com</a></div>
+      </div>
+    </div>
+
+    <!-- template objects; never make this container visible -->
+    <div style="display: none">
+      <div id="search_res_row_tmpl" class="col-dir-r search_res_row bordered">
+        <div class="row-dir" style="justify-content: space-between;">
+          <div data-id="srr_ts"></div>
+          <div data-id="srr_uris"></div>
+        </div>
+        <div><blockquote data-id="srr_hilite"></blockquote></div>
+        <div data-id="srr_ann"></div>
+      </div>
+    </div>
+    <script src="shared.js"></script>
+    <script src="search.js"></script>
+  </body>
+</html>

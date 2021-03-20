@@ -141,6 +141,7 @@ const addBackend = async (spec, failIfCannotConnect = false) => {
 }
 
 const discoverBackends = async (onFailure) => {
+  console.log('discoverBackends!');
   const opts = await hlteOptions();
   let beSpec = [];
 
@@ -162,7 +163,7 @@ const discoverBackends = async (onFailure) => {
     return false;
   }
 
-  return true;
+  return backends;
 };
 
 const isABackendReachable = () => Object.entries(backends).some(x => x[1][0]);
@@ -318,4 +319,9 @@ async function postPayloadToBackends(payload) {
   }
 
   return successes > 0;
+}
+
+function sharedOnDOMContentLoaded(onLoaded) {
+  document.getElementById('ver_box').innerText = `v${theRealBrowser.runtime.getManifest().version}.${BE_PIN_VER}`;
+  discoverBackends(console.error).then((foundBackends) => onLoaded(foundBackends)).catch(console.error);
 }
