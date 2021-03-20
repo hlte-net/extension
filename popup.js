@@ -50,10 +50,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const bq = document.createElement('blockquote');
         bq.style.width = document.getElementById('annotation').style.width;
-        bq.innerText = `"${capturedSelected}"`;
+        bq.textContent = `"${capturedSelected}"`;
 
         document.getElementById('anno_sel').appendChild(bq);
-        document.getElementById('ann_label').innerText = 'Annotate this page with hilite:';
+        document.getElementById('ann_label').textContent = 'Annotate this page with hilite:';
       }
     });
   });

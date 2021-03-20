@@ -60,7 +60,7 @@ async function restoreOptions() {
 }
 
 async function contentLoaded(_) {
-  document.getElementById('be_title').innerText = 'Verifying backends...';
+  document.getElementById('be_title').textContent = 'Verifying backends...';
   const foundBes = await discoverBackends();
   
   if (Object.keys(backends).length > 0 && !foundBes) {
@@ -68,7 +68,7 @@ async function contentLoaded(_) {
     document.getElementById('error_container').style.display = 'block';
     setStatusIcon(assets.icons.error, { title: 'No backends found' });
   } else {
-    document.getElementById('be_title').innerText = 'Registered backends:';
+    document.getElementById('be_title').textContent = 'Registered backends:';
 
     const formatCont = document.getElementById('local_formats');
     const formatTmpl = document.getElementById('local_format_tmpl');
@@ -147,7 +147,7 @@ async function contentLoaded(_) {
         const conf = document.getElementById('be_del_confim_tmpl').cloneNode(true);
         conf.removeAttribute('id');
 
-        findChildByDataId('be_name', conf).innerText = spec[0];
+        findChildByDataId('be_name', conf).textContent = spec[0];
         const clearConf = () => document.body.removeChild(conf);
 
         findChildByDataId('y', conf).addEventListener('click', async () => {

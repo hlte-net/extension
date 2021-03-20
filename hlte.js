@@ -128,7 +128,7 @@ const msgHandlers = {
 
     let buttonCaptureHilite;
     const but = document.createElement('button');
-    but.innerText = 'Save annotation';
+    but.textContent = 'Save annotation';
     but.addEventListener('click', async () => {
       const resp = await postToBackends(buttonCaptureHilite, ta.value, srcUrl, pageUrl);
 
@@ -142,12 +142,12 @@ const msgHandlers = {
 
     const curOpts = await hlteOptions();
     if (!curOpts.formats) {
-      but.innerText = 'Set format(s) in options to enable!';
+      but.textContent = 'Set format(s) in options to enable!';
       but.disabled = true;
     }
 
     const cncl = document.createElement('button');
-    cncl.innerText = 'Cancel';
+    cncl.textContent = 'Cancel';
     cncl.addEventListener('click', rmImgAnCont);
 
     imgAnCont.appendChild(document.createTextNode(`Annotation:`));

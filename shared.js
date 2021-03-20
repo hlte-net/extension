@@ -309,6 +309,6 @@ async function postPayloadToBackends(payload) {
 }
 
 function sharedOnDOMContentLoaded(onLoaded) {
-  document.getElementById('ver_box').innerText = `v${theRealBrowser.runtime.getManifest().version}.${BE_PIN_VER}`;
+  document.getElementById('ver_box').textContent = `v${theRealBrowser.runtime.getManifest().version}.${BE_PIN_VER}`;
   discoverBackends(console.error).then((foundBackends) => onLoaded(foundBackends)).catch(console.error);
 }

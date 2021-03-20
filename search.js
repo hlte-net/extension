@@ -20,7 +20,7 @@ async function onContentLoaded(backends) {
   searchIn.addEventListener('keydown', async (e) => {
     if (e.code === 'Enter') {
       searchIn.disabled = true;
-      document.getElementById('search_res_info').innerText = `Searching...`;
+      document.getElementById('search_res_info').textContent = `Searching...`;
       const srEle = document.getElementById('search_res');
 
       while (srEle.firstChild) {
@@ -37,7 +37,7 @@ async function onContentLoaded(backends) {
             const rJson = await res.json();
 
             if (!rJson) {
-              document.getElementById('search_res_info').innerText = 'No results found!';
+              document.getElementById('search_res_info').textContent = 'No results found!';
               continue;
             }
 
@@ -50,7 +50,7 @@ async function onContentLoaded(backends) {
               const nrC = (cid) => findChildByDataId(cid, newRow);
               newRow.removeAttribute('id');
 
-              nrC('srr_ts').innerText = new Date(Number.parseInt(row.timestamp) / 1e6).toLocaleString();
+              nrC('srr_ts').textContent = new Date(Number.parseInt(row.timestamp) / 1e6).toLocaleString();
               const pURL = new URL(row.primaryURI);
               nrC('srr_uris').innerHTML = `<a href="${row.primaryURI}" target="_blank">${pURL.hostname}</a>`;
 
@@ -80,16 +80,16 @@ async function onContentLoaded(backends) {
                 }
               }
 
-              nrC('srr_hilite').innerText = row.hilite;
+              nrC('srr_hilite').textContent = row.hilite;
 
               if (row.annotation && row.annotation.length) {
-                nrC('srr_ann').innerText = row.annotation;
+                nrC('srr_ann').textContent = row.annotation;
               }
 
               srEle.appendChild(newRow);
             }
 
-            document.getElementById('search_res_info').innerText = `${rJson.length} results ` + 
+            document.getElementById('search_res_info').textContent = `${rJson.length} results ` + 
               `(${Object.entries(foundMedia).map(([m, c]) => `${c} ${m}${c > 1 ? 's' : ''}`).join(', ')})` +
               ` -- ${Date.now() - startTs}ms`;
           } catch (err) {
