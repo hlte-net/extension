@@ -141,7 +141,6 @@ const addBackend = async (spec, failIfCannotConnect = false) => {
 }
 
 const discoverBackends = async (onFailure) => {
-  console.log('discoverBackends!');
   const opts = await hlteOptions();
   let beSpec = [];
 

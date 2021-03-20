@@ -1,6 +1,6 @@
 'use strict';
 
-let annotateHandle, searchHandle, reloadHandle;
+let annotateHandle, searchHandle, reloadHandle, searchWinHandle;
 
 const annotateListener = async (info) => {
   const { pageUrl, srcUrl } = info;
@@ -17,12 +17,20 @@ theRealBrowser.runtime.onInstalled.addListener(() => {
     contexts: ['browser_action'],
     visible: true,
     id: 'ba_search',
-    onclick: () => {
-      theRealBrowser.windows.create({
+    onclick: async () => {
+      const createObj = {
         url: 'search.html',
         height: 640,
-        width: 864
-      });
+        width: 864,
+        type: 'popup'
+      };
+
+      if (IAMFF) {
+        createObj.titlePreface = 'hlte.net search';
+      }
+
+      searchWinHandle = await theRealBrowser.windows.create(createObj);
+      console.log('created window', searchWinHandle);
     }
   }, () => console.log(theRealBrowser.runtime.lastError));
 
@@ -34,7 +42,7 @@ theRealBrowser.runtime.onInstalled.addListener(() => {
     onclick: () => theRealBrowser.runtime.reload()
   }, () => console.log(theRealBrowser.runtime.lastError));
   
-  annotateId = theRealBrowser.contextMenus.create({
+  annotateHandle = theRealBrowser.contextMenus.create({
     title: 'Annotate media',
     contexts: ['image', 'video'],
     visible: true,

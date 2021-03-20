@@ -29,14 +29,22 @@ async function onContentLoaded(backends) {
 
       for (const beEnt of Object.entries(backends)) {
         const [_, beSpec] = beEnt;
+        const startTs = Date.now();
         const res = await hlteFetch('/search', beSpec[1], undefined, { q: searchIn.value });
       
         if (res.ok) {
           try {
-            const rJson = (await res.json()).reverse();
+            const rJson = await res.json();
+
+            if (!rJson) {
+              document.getElementById('search_res_info').innerText = 'No results found!';
+              continue;
+            }
+
             const rowTmpl = document.getElementById('search_res_row_tmpl');
             const foundMedia = Object.keys(mediaElements).reduce((a, k) => ({ [k]: 0, ...a }), {});
 
+            rJson.reverse();
             for (let row of rJson) {
               const newRow = rowTmpl.cloneNode(true);
               const nrC = (cid) => findChildByDataId(cid, newRow);
@@ -58,9 +66,9 @@ async function onContentLoaded(backends) {
                     if (mediaElements[ct]) {
                       newRow.appendChild(mediaElements[ct](row.primaryURI, mRes));
                       ++foundMedia[ct];
+                    } else {
+                      console.log(`Unhandled media type: ${row.primaryURI} -> ${mRes.headers.get('content-type')}`);
                     }
-
-                    console.log(`${row.primaryURI} -> ${mRes.headers.get('content-type')}`);
                   }
                   else {
                     logger.error(`failed to fetch media ${row.primaryURI}`);
@@ -82,10 +90,10 @@ async function onContentLoaded(backends) {
             }
 
             document.getElementById('search_res_info').innerText = `${rJson.length} results ` + 
-              `(${Object.entries(foundMedia).map(([m, c]) => `${c} ${m}${c > 1 ? 's' : ''}`).join(', ')})`;
+              `(${Object.entries(foundMedia).map(([m, c]) => `${c} ${m}${c > 1 ? 's' : ''}`).join(', ')})` +
+              ` -- ${Date.now() - startTs}ms`;
           } catch (err) {
             logger.error(`failed to parse query result: ${err}`);
-            document.getElementById('search_res_info').innerText = 'No results found!';
           }
         }
       }
