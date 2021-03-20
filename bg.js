@@ -11,29 +11,29 @@ const annotateListener = async (info) => {
   });
 };
 
+const logIfError = (msg) => {
+  if (theRealBrowser.runtime.lastError) {
+    console.error(`Error "${msg}": `, theRealBrowser.runtime.lastError);
+  }
+}
+
 const bgScriptMain = () => {
-  console.log('hlte.net bg script loaded', annotateHandle, searchHandle, reloadHandle, searchWinHandle);
   searchHandle = theRealBrowser.contextMenus.create({
     title: 'Search...',
     contexts: ['browser_action'],
     visible: true,
     id: 'ba_search',
     onclick: async () => {
-      const createObj = {
-        url: 'search.html',
-        height: 640,
-        width: 864,
-        type: 'popup'
-      };
+      const createObj = Object.assign({}, config.search.templateObj);
 
       if (IAMFF) {
-        createObj.titlePreface = 'hlte.net search';
+        createObj.titlePreface = config.search.titlePreface;
       }
 
       searchWinHandle = await theRealBrowser.windows.create(createObj);
       console.log('created window', searchWinHandle);
     }
-  }, () => console.log(theRealBrowser.runtime.lastError));
+  }, logIfError.bind(null, 'search'));
 
   reloadHandle = theRealBrowser.contextMenus.create({
     title: 'Reload',
@@ -41,7 +41,7 @@ const bgScriptMain = () => {
     visible: true,
     id: 'ba_ctx',
     onclick: () => theRealBrowser.runtime.reload()
-  }, () => console.log(theRealBrowser.runtime.lastError));
+  }, logIfError.bind(null, 'reload'));
 
   annotateHandle = theRealBrowser.contextMenus.create({
     title: 'Annotate media',
@@ -49,12 +49,7 @@ const bgScriptMain = () => {
     visible: true,
     id: 'ctx_menu',
     onclick: annotateListener
-  },
-  () => {
-    if (theRealBrowser.runtime.lastError) {
-      console.error('ctx created?', theRealBrowser.runtime.lastError);
-    }
-  });
+  }, logIfError.bind(null, 'annotate'));
 };
 
 bgScriptMain();

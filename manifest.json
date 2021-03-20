@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "hlte.net",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "hlte.net browser extension",
   "author": "Electric Sheep Co.",
   "homepage_url": "https://hlte.net",
@@ -17,11 +17,11 @@
   "content_scripts": [
     {
       "matches": ["*://*/*"],
-      "js": ["shared.js", "hlte.js"]
+      "js": ["config.js", "shared.js", "hlte.js"]
     }
   ],
   "background": {
-    "scripts": ["shared.js", "bg.js"],
+    "scripts": ["config.js", "shared.js", "bg.js"],
     "persistent": true
   },
   "permissions": [
@@ -41,7 +41,7 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "hello@hlte.net",
-      "strict_min_version": "48.0",
+      "strict_min_version": "58.0",
       "update_url": "https://updates.hlte.net/main.json"
     }
   },

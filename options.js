@@ -258,10 +258,4 @@ addOurClickListener('add_be_submit', async (ev) => {
 
 addOurClickListener('add_be_cancel', async (ev) => hideAddBeDialog());
 
-//document.addEventListener('DOMContentLoaded', sharedOnDOMContentLoaded);
-
-document.addEventListener('DOMContentLoaded', () => {
-  console.error('thefuck');
-  document.getElementById('ver_box').innerText = `v${theRealBrowser.runtime.getManifest().version}.${BE_PIN_VER}`;
-  contentLoaded();
-});
+document.addEventListener('DOMContentLoaded', sharedOnDOMContentLoaded.bind(null, contentLoaded));

@@ -33,7 +33,8 @@ input, button {
   display: block;
   position: absolute;
   font-size: 85%;
-  top: 0.2em;
+  top: 5px;
+  left: 5px;
   font-variant: small-caps;
   color: #999;
 }
@@ -233,6 +234,10 @@ video, img {
 }
 
 #search_main_cont {
+  margin-top: 30px;
+}
+
+#options_main_cont {
   margin-top: 30px;
 }
 

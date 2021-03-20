@@ -1,7 +1,7 @@
 'use strict';
 
-const BE_PIN_VER = 20200970;
-const PP_HDR = 'x-hlte-pp';
+const BE_PIN_VER = config.backend.pinVer;
+const PP_HDR = config.backend.ppHeader;
 let IAMFF = false; // only set if browser is Firefox
 
 let theRealBrowser;
@@ -20,20 +20,8 @@ if (!crypto.subtle) {
   crypto.subtle = { digest: async () => new Promise((res) => res("")) };
 }
 
-const assetHost = 'https://static.hlte.net';
-const assets = {
-  icons: {
-    main: 'icons8-crayon-64-blueedit.png',
-    error: 'icons8-crayon-64-blueedit-errored.png',
-    ok: 'icons8-crayon-64-blueedit-ok.png',
-    key: 'icons8-key-32.png',
-    nokey: 'icons8-no-key-32.png',
-    lock: 'icons8-lock-32.png',
-    unlock: 'icons8-unlock-32.png',
-    delete: 'icons8-trash-32.png'
-  }
-};
-
+const assetHost = config.assets.host;
+const assets = config.assets;
 const backends = {};
 
 const hexDigest = async (algo, payloadStr) => {
