@@ -24,5 +24,9 @@ const config = {
   backend: {
     pinVer: 20200970,
     ppHeader: 'x-hlte-pp'
+  },
+  styles: {
+    light: '/light.css',
+    dark: '/dark.css'
   }
 };

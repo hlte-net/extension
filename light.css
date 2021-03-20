@@ -1,0 +1,8 @@
+:root {
+  --main-bg-color: white;
+  --underline-border: 1px solid rgb(15, 15, 85);
+  --main-border: 1px solid rgb(15, 15, 85);
+  --main-color: black;
+  --blockquote-bg-color: rgb(253, 249, 229);
+  --headline-color: rgb(15, 15, 85);
+}

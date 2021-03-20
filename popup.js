@@ -37,7 +37,7 @@ addOurClickListener('annotate_button', async () => {
   });
 });
 
-document.addEventListener('DOMContentLoaded', async () => {
+async function popupOnDOMContentLoaded() {
   // if the user has selected text, automatically populate the annotation text area with it quoted
   theRealBrowser.tabs.query({ active: true }, async (t) => {
     const tId = t.find(x => x.active).id;
@@ -61,4 +61,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   await discoverBackends();
   const opts = await hlteOptions();
   abled(isABackendReachable() && !!opts.formats);
-});
+};
+
+document.addEventListener('DOMContentLoaded', sharedOnDOMContentLoaded.bind(null, popupOnDOMContentLoaded));

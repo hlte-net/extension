@@ -1,17 +1,30 @@
+
 body {
   font-family: 'Helvetic Neue', Helvetica, Arial, sans-serif;
   font-weight: lighter;
   min-height: 200px;
+  background-color: var(--main-bg-color);
+  color: var(--main-color);
 }
 
 div {
   display: flex;
 }
 
+input, button, textarea {
+  background-color: var(--blockquote-bg-color);
+  color: var(--main-color);
+}
+
+a {
+  color: var(--main-color);
+}
+
 h3 {
   text-align: center;
   font-variant: small-caps;
-  border-bottom: 1px solid rgb(15, 15, 85);
+  border-bottom: var(--underline-border);
+  color: var(--headline-color);
 }
 
 input, button {
@@ -79,7 +92,8 @@ input, button {
   position: absolute;
   top: 20px;
   left: 20px;
-  background: rgba(211, 233, 243, 0.95);
+  background: var(--main-bg-color);
+  color: var(--main-color);
   padding: 20px;
   border-radius: 6px;
   z-index: 999;
@@ -90,7 +104,7 @@ input, button {
 }
 
 .bordered {
-  border: 1px solid rgb(15, 15, 85);
+  border: var(--main-border);
   border-radius: 0.5em;
 }
 
@@ -239,11 +253,12 @@ video, img {
 
 #options_main_cont {
   margin-top: 30px;
+  min-width: 450px;
 }
 
 blockquote {
   font-size: 1.1em;
-  background-color: rgb(253, 249, 229);
+  background-color: var(--blockquote-bg-color);
   padding: 1em;
   border-left: 5px solid rgb(98, 134, 163);
 }

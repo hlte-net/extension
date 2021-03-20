@@ -308,7 +308,48 @@ async function postPayloadToBackends(payload) {
   return successes > 0;
 }
 
-function sharedOnDOMContentLoaded(onLoaded) {
-  document.getElementById('ver_box').textContent = `v${theRealBrowser.runtime.getManifest().version}.${BE_PIN_VER}`;
-  discoverBackends(console.error).then((foundBackends) => onLoaded(foundBackends)).catch(console.error);
+async function toggleTheme(setSpecific = undefined) {
+  let styleLink = document.getElementById('style_link');
+
+  if (!styleLink) {
+    console.error('style link');
+    return;
+  }
+  
+  let styleURL = new URL(styleLink.href);
+  let toSet = styleURL.pathname === config.styles.light ? config.styles.dark : config.styles.light;
+
+  if (setSpecific && (Object.keys(config.styles).indexOf(setSpecific) !== -1)) {
+    toSet = config.styles[setSpecific];
+  }
+
+  styleLink.href = `${styleURL.origin}${toSet}`;
+  let opts = await hlteOptions();
+  opts.theme = toSet;
+  hlteOptions(opts);
+}
+
+async function sharedOnDOMContentLoaded(onLoaded) {
+  let verBox = document.getElementById('ver_box');
+  if (verBox) {
+    verBox.textContent = `v${theRealBrowser.runtime.getManifest().version}.${BE_PIN_VER}`;
+  }
+
+  let ttBut = document.getElementById('theme_toggle_button');
+  if (ttBut) {
+    ttBut.addEventListener('click', toggleTheme);
+  }
+
+  let opts = await hlteOptions();
+
+  if (opts.theme) {
+    await toggleTheme(opts.theme);
+  }
+
+  try {
+    let foundBackends = await discoverBackends(console.error);
+    onLoaded(foundBackends);
+  } catch (err) {
+    console.log('sharedOnDOMContentLoaded', err);
+  }
 }
