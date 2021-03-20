@@ -11,7 +11,8 @@ const annotateListener = async (info) => {
   });
 };
 
-theRealBrowser.runtime.onInstalled.addListener(() => {
+const bgScriptMain = () => {
+  console.log('hlte.net bg script loaded', annotateHandle, searchHandle, reloadHandle, searchWinHandle);
   searchHandle = theRealBrowser.contextMenus.create({
     title: 'Search...',
     contexts: ['browser_action'],
@@ -41,7 +42,7 @@ theRealBrowser.runtime.onInstalled.addListener(() => {
     id: 'ba_ctx',
     onclick: () => theRealBrowser.runtime.reload()
   }, () => console.log(theRealBrowser.runtime.lastError));
-  
+
   annotateHandle = theRealBrowser.contextMenus.create({
     title: 'Annotate media',
     contexts: ['image', 'video'],
@@ -54,4 +55,6 @@ theRealBrowser.runtime.onInstalled.addListener(() => {
       console.error('ctx created?', theRealBrowser.runtime.lastError);
     }
   });
-});
+};
+
+bgScriptMain();
