@@ -52,11 +52,17 @@ async function onContentLoaded(backends) {
 
               nrC('srr_ts').textContent = new Date(Number.parseInt(row.timestamp) / 1e6).toLocaleString();
               const pURL = new URL(row.primaryURI);
-              nrC('srr_uris').innerHTML = `<a href="${row.primaryURI}" target="_blank">${pURL.hostname}</a>`;
+              const pLink = document.createElement('a');
+              pLink.href = row.primaryURI;
+              pLink.textContent = pURL.hostname;
+              nrC('srr_uris').appendChild(pLink);
 
               if (row.secondaryURI && row.secondaryURI.length) {
                 const sURL = new URL(row.secondaryURI);
-                nrC('srr_uris').innerHTML += `&nbsp;(<a href="${row.secondaryURI}" target="_blank">${sURL.hostname}</a>)`;
+                const sLink = document.createElement('a');
+                sLink.href = row.secondaryURI;
+                sLink.textContent = `(${sURL.hostname})`;
+                nrC('srr_uris').appendChild(sLink);
 
                 try {
                   const mRes = await fetch(row.primaryURI);
