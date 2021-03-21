@@ -53,7 +53,7 @@
   },
   "web_accessible_resources": [
     "icons/*.png",
-    "style.css",
+    "*.css",
     "*.js"
   ]
 }
