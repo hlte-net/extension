@@ -22,7 +22,7 @@ const config = {
     }
   },
   backend: {
-    pinVer: 20200970,
+    pinVer: 20210320,
     ppHeader: 'x-hlte-pp'
   },
   styles: {

@@ -9,6 +9,7 @@ body {
 
 div {
   display: flex;
+  background-color: var(--main-bg-color);
 }
 
 input, button, textarea {
@@ -158,7 +159,7 @@ li {
 
 #annotation {
   width: 250px;
-  height: 75px;
+  height: 125px;
   margin: 5px 0 5px 0;
 }
 

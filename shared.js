@@ -332,7 +332,7 @@ async function toggleTheme(setSpecific = undefined) {
 async function sharedOnDOMContentLoaded(onLoaded) {
   let verBox = document.getElementById('ver_box');
   if (verBox) {
-    verBox.textContent = `v${theRealBrowser.runtime.getManifest().version}.${BE_PIN_VER}`;
+    verBox.textContent = `${theRealBrowser.runtime.getManifest().version} / ${BE_PIN_VER}`;
   }
 
   let ttBut = document.getElementById('theme_toggle_button');
