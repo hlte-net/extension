@@ -27,10 +27,21 @@
     </div>
 
     <div id="search_main_cont" style="width: 100%;" class="row-dir">
-      <div class="col-dir ctrl-box bordered">
-        <h3 id="query_title">Search:
-          <input type="text" id="search_in" style="margin: 0 0 7px 7px;" >
-        </h3>
+      <div id="search_inner_cont" class="col-dir ctrl-box bordered">
+        <div id="search_innerinner_cont">
+          <div style="display: inline;">
+            <h3 id="query_title" class="inline">Search:</h3>
+            <input  class="inline" type="text" id="search_in" style="margin: 0 0 7px 7px;" />
+          </div>
+          <div style="display: inline;">
+            <h3 id="" class="inline">Limit:</h3>
+            <input class="inline" type="number" id="limit_in" size="6" value="100" placeholder="10" style="margin: 0 0 7px 7px;" />
+          </div>
+          <div style="display: inline;">
+            <h3 id="" class="inline">Newest First:</h3>
+            <input class="inline" type="checkbox" id="newest_first_in" checked="true" />
+          </div>
+        </div>
         <div id="search_res_info" class="col-dir"></div>
         <div id="search_res" class="col-dir"></div>
       </div>

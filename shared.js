@@ -319,14 +319,81 @@ async function toggleTheme(setSpecific = undefined) {
   let styleURL = new URL(styleLink.href);
   let toSet = styleURL.pathname === config.styles.light ? config.styles.dark : config.styles.light;
 
-  if (setSpecific && (Object.keys(config.styles).indexOf(setSpecific) !== -1)) {
-    toSet = config.styles[setSpecific];
+  if (setSpecific && (Object.values(config.styles).indexOf(setSpecific) !== -1)) {
+    toSet = setSpecific;
   }
 
   styleLink.href = `${styleURL.origin}${toSet}`;
   let opts = await hlteOptions();
   opts.theme = toSet;
-  hlteOptions(opts);
+  await hlteOptions(opts);
+}
+
+const logIfError = (msg) => {
+  if (theRealBrowser.runtime.lastError) {
+    console.error(`Error "${msg}": `, theRealBrowser.runtime.lastError);
+  }
+}
+
+let ctxMenuActionHandle, ctxWindowHandle;
+
+const ctxMenuCreateTmpls = {
+  annotate: {
+    title: "Annotate...",
+    id: "ann_ctx_menu"
+  },
+  search: {
+    title: "Search...",
+    id: "srch_ctx_menu"
+  }
+};
+
+async function createButtonContextMenuFor(action) {
+  let createSpec = ctxMenuCreateTmpls[action];
+
+  if (!createSpec) {
+    console.error('bad spec', action);
+    return;
+  }
+
+  if (ctxMenuActionHandle) {
+    await theRealBrowser.contextMenus.remove(ctxMenuActionHandle, null);
+  }
+
+  const opsMenu = action === 'search' ? 'annotate' : 'search';
+  await theRealBrowser.contextMenus.remove(ctxMenuCreateTmpls[opsMenu].id);
+
+  createSpec = Object.assign(createSpec, {
+    contexts: ['browser_action'],
+    visible: true,
+    onclick: async () => {
+      const cfg = config[action];
+
+      if (!cfg) {
+        console.error('bad tmpl', action);
+        return;
+      }
+
+      const createObj = Object.assign({}, cfg.templateObj);
+
+      if (IAMFF) {
+        createObj.titlePreface = cfg.titlePreface;
+      }
+
+      ctxWindowHandle = await theRealBrowser.windows.create(createObj);
+    }
+  });
+
+  ctxMenuActionHandle = theRealBrowser.contextMenus.create(createSpec, logIfError.bind(null, `createContextMenuFor(${action})`));
+
+  await theRealBrowser.browserAction.setPopup({
+    popup: theRealBrowser.extension.getURL((action === 'search' ? 'popup' : 'search') + '.html')
+  });
+
+  const curOpts = await hlteOptions();
+  curOpts.buttonAction = opsMenu;
+  curOpts.buttonContextMenu = action;
+  await hlteOptions(curOpts);
 }
 
 async function sharedOnDOMContentLoaded(onLoaded) {

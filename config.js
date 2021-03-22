@@ -6,8 +6,20 @@ const config = {
       width: 896,
       type: 'popup'
     },
-    titlePreface: 'hlte.net search'
+    titlePreface: 'hlte.net search',
+    defaultLimit: 10,
+    maxLimit: 8192
   },
+  annotate: {
+    templateObj: {
+      url: 'popup.html',
+      height: 420,
+      width: 420,
+      type: 'popup'
+    },
+    titlePreface: 'hlte.net page annotation',
+  },
+  defaultButtonContextMenu: 'search',
   assets: {
     host: 'https://static.hlte.net',
     icons: {

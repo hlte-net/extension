@@ -57,6 +57,10 @@ async function restoreOptions() {
       }
     });
   }
+
+  if (allOpts.buttonAction) {
+    document.getElementById(`bbb_toggle_${allOpts.buttonAction}`).checked = true;
+  }
 }
 
 async function contentLoaded(_) {
@@ -165,6 +169,15 @@ async function contentLoaded(_) {
       });
 
       beList.appendChild(newNode);
+    });
+
+    const bbbToggleOnChange = (ev) => {
+      console.log('bbbToggle', ev.target.value);
+      createButtonContextMenuFor(ev.target.value);
+    };
+
+    document.querySelectorAll('input[type=radio][name="bbb_toggle_group"]').forEach((bbbToggle) => {
+      bbbToggle.addEventListener('change', bbbToggleOnChange);
     });
 
     restoreOptions();

@@ -26,6 +26,7 @@ h3 {
   font-variant: small-caps;
   border-bottom: var(--underline-border);
   color: var(--headline-color);
+  padding-bottom: 4px;
 }
 
 input, button {
@@ -239,7 +240,6 @@ h4 {
 
 video, img {
   max-width: 752px;
-  max-height: 752px;
 }
 
 #search_res_info {
@@ -252,6 +252,13 @@ video, img {
   margin-top: 30px;
 }
 
+#search_inner_cont {
+  min-width: 768px;
+}
+
+#search_innerinner_cont {
+  justify-content: space-evenly;
+}
 #options_main_cont {
   margin-top: 30px;
   min-width: 450px;
@@ -267,4 +274,12 @@ blockquote {
 #anno_cont {
   display: block;
   padding: 1em 1em 0 1em;
+}
+
+.inline {
+  display: inline;
+}
+
+#limit_in {
+
 }

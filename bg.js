@@ -11,37 +11,11 @@ const annotateListener = async (info) => {
   });
 };
 
-const logIfError = (msg) => {
-  if (theRealBrowser.runtime.lastError) {
-    console.error(`Error "${msg}": `, theRealBrowser.runtime.lastError);
-  }
-}
-
-const bgScriptMain = () => {
-  searchHandle = theRealBrowser.contextMenus.create({
-    title: 'Search...',
-    contexts: ['browser_action'],
-    visible: true,
-    id: 'ba_search',
-    onclick: async () => {
-      const createObj = Object.assign({}, config.search.templateObj);
-
-      if (IAMFF) {
-        createObj.titlePreface = config.search.titlePreface;
-      }
-
-      searchWinHandle = await theRealBrowser.windows.create(createObj);
-      console.log('created window', searchWinHandle);
-    }
-  }, logIfError.bind(null, 'search'));
-
-  reloadHandle = theRealBrowser.contextMenus.create({
-    title: 'Reload',
-    contexts: ['browser_action'],
-    visible: true,
-    id: 'ba_ctx',
-    onclick: () => theRealBrowser.runtime.reload()
-  }, logIfError.bind(null, 'reload'));
+const bgScriptMain = async () => {
+  const curOpts = await hlteOptions();
+  let curCtxMenu = curOpts.buttonContextMenu || config.defaultButtonContextMenu;
+  console.log('loading bg, curCtxMenu', curCtxMenu, curOpts);
+  createButtonContextMenuFor(curCtxMenu);
 
   annotateHandle = theRealBrowser.contextMenus.create({
     title: 'Annotate media',

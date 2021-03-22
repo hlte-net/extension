@@ -2,7 +2,7 @@
   --main-bg-color: rgb(59, 60, 65);
   --underline-border: 1px solid rgb(12, 12, 12);
   --main-border: 1px solid rgb(12, 12, 12);
-  --main-color: rgb(195, 248, 255);
+  --headline-color: rgb(195, 248, 255);
   --blockquote-bg-color: rgb(12, 12, 12);
-  --headline-color: rgb(225, 248, 251);
+  --main-color: rgb(225, 248, 251);
 }
