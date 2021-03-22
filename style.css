@@ -235,17 +235,16 @@ h4 {
 }
 
 #search_res {
-  max-width: 768px;
+  max-width: 668px;
 }
 
 video, img {
-  max-width: 752px;
+  max-width: 652px;
 }
 
 #search_res_info {
   text-align: center;
   margin: 0.3em;
-  font-size: 0.8em;
 }
 
 #search_main_cont {
@@ -253,7 +252,7 @@ video, img {
 }
 
 #search_inner_cont {
-  min-width: 768px;
+  min-width: 668px;
 }
 
 #search_innerinner_cont {
@@ -278,8 +277,4 @@ blockquote {
 
 .inline {
   display: inline;
-}
-
-#limit_in {
-
 }

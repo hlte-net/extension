@@ -2,8 +2,8 @@ const config = {
   search: {
     templateObj: {
       url: 'search.html',
-      height: 896,
-      width: 896,
+      height: 768,
+      width: 768,
       type: 'popup'
     },
     titlePreface: 'hlte.net search',

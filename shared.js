@@ -407,6 +407,11 @@ async function sharedOnDOMContentLoaded(onLoaded) {
     ttBut.addEventListener('click', toggleTheme);
   }
 
+  let optsBut = document.getElementById('open_options_button');
+  if (optsBut) {
+    optsBut.addEventListener('click', () => theRealBrowser.runtime.openOptionsPage());
+  }
+
   let opts = await hlteOptions();
 
   if (opts.theme) {
