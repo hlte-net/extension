@@ -1,6 +1,6 @@
 'use strict';
 
-let annotateHandle, searchHandle, reloadHandle, searchWinHandle;
+let annotateHandle;
 
 const annotateListener = async (info) => {
   const { pageUrl, srcUrl } = info;

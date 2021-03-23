@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "hlte.net",
-  "version": "0.3",
+  "version": "0.3.1",
   "description": "hlte.net browser extension",
   "author": "Electric Sheep Co.",
   "homepage_url": "https://hlte.net",

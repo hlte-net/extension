@@ -348,6 +348,36 @@ const ctxMenuCreateTmpls = {
   }
 };
 
+let reloadHandle;
+async function createReloadCtxMenu() {
+  if (reloadHandle) {
+    await theRealBrowser.contextMenus.remove(reloadHandle);
+  }
+
+  reloadHandle = await theRealBrowser.contextMenus.create({
+    title: 'Reload',
+    contexts: ['browser_action'],
+    visible: true,
+    id: 'reload_ctx',
+    onclick: () => theRealBrowser.runtime.reload()
+  }, logIfError.bind(null, 'reload'));
+}
+
+let optsHandle;
+async function createOptionsCtxMenu() {
+  if (optsHandle) {
+    await theRealBrowser.contextMenus.remove(optsHandle);
+  }
+
+  optsHandle = await theRealBrowser.contextMenus.create({
+    title: 'Options...',
+    contexts: ['browser_action'],
+    visible: true,
+    id: 'opts_ctx',
+    onclick: () => theRealBrowser.runtime.openOptionsPage()
+  }, logIfError.bind(null, 'options'));
+}
+
 async function createButtonContextMenuFor(action) {
   let createSpec = ctxMenuCreateTmpls[action];
 
@@ -356,12 +386,13 @@ async function createButtonContextMenuFor(action) {
     return;
   }
 
-  if (ctxMenuActionHandle) {
-    await theRealBrowser.contextMenus.remove(ctxMenuActionHandle, null);
-  }
-
   const opsMenu = action === 'search' ? 'annotate' : 'search';
-  await theRealBrowser.contextMenus.remove(ctxMenuCreateTmpls[opsMenu].id);
+
+  if (ctxMenuActionHandle) {
+    await theRealBrowser.contextMenus.remove(ctxMenuActionHandle);
+  } else {
+    await theRealBrowser.contextMenus.remove(ctxMenuCreateTmpls[opsMenu].id);
+  }
 
   createSpec = Object.assign(createSpec, {
     contexts: ['browser_action'],
@@ -384,11 +415,15 @@ async function createButtonContextMenuFor(action) {
     }
   });
 
-  ctxMenuActionHandle = theRealBrowser.contextMenus.create(createSpec, logIfError.bind(null, `createContextMenuFor(${action})`));
+  ctxMenuActionHandle = await theRealBrowser.contextMenus.create(createSpec, 
+    logIfError.bind(null, `createContextMenuFor(${action})`));
 
   await theRealBrowser.browserAction.setPopup({
     popup: theRealBrowser.extension.getURL((action === 'search' ? 'popup' : 'search') + '.html')
   });
+
+  await createOptionsCtxMenu();
+  await createReloadCtxMenu();
 
   const curOpts = await hlteOptions();
   curOpts.buttonAction = opsMenu;
