@@ -97,7 +97,13 @@ document.onselectstart = () => {
 const msgHandlers = {
   queryLastSelected: async (_) => ({ response: lastSelected }),
   annotateMedia: async (msg) => {
-    const { pageUrl, srcUrl } = msg;
+    let { pageUrl, srcUrl, buttonCaptureHilite } = msg;
+
+    if (!srcUrl) {
+      srcUrl = pageUrl;
+      pageUrl = undefined;
+    }
+
     const imgAnCont = document.createElement('div');
     const rmImgAnCont = () => document.body.removeChild(imgAnCont);
     imgAnCont.id = 'media_annotate_popup';
@@ -126,7 +132,6 @@ const msgHandlers = {
     imgTxt.style.fontSize = '0.6em';
     imgTxt.appendChild(document.createTextNode(srcUrl.split('/').reverse()[0]));
 
-    let buttonCaptureHilite;
     const but = document.createElement('button');
     but.textContent = 'Save annotation';
     but.addEventListener('click', async () => {
@@ -155,8 +160,11 @@ const msgHandlers = {
     imgAnCont.appendChild(ta);
     imgAnCont.appendChild(document.createElement('br'));
 
-    if (lastSelected && lastSelected.length) {
-      buttonCaptureHilite = lastSelected;
+    if (buttonCaptureHilite || (lastSelected && lastSelected.length)) {
+      if (!buttonCaptureHilite) {
+        buttonCaptureHilite = lastSelected;
+      }
+
       imgAnCont.appendChild(document.createTextNode(`Including hilite:`));
       const bq = document.createElement('blockquote');
       bq.style.margin = '0.5em 1.5em 0px';
