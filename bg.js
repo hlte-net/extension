@@ -22,7 +22,7 @@ const bgScriptMain = async () => {
   createButtonContextMenuFor(curCtxMenu);
 
   annotateHandle = theRealBrowser.contextMenus.create({
-    title: 'Annotate media',
+    title: 'Hilite media',
     contexts: ['image', 'video'],
     visible: true,
     id: 'ctx_menu',

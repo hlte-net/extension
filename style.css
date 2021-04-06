@@ -267,7 +267,7 @@ blockquote {
   font-size: 1.1em;
   background-color: var(--blockquote-bg-color);
   padding: 1em;
-  border-left: 5px solid rgb(98, 134, 163);
+  border-left: 5px solid #79a2b9;
 }
 
 #anno_cont {
