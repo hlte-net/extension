@@ -34,7 +34,7 @@ const config = {
     }
   },
   backend: {
-    pinVer: 20210320,
+    pinVer: 20220111,
     ppHeader: 'x-hlte-pp'
   },
   styles: {
