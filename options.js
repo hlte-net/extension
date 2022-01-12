@@ -253,7 +253,7 @@ addOurClickListener('add_be_submit', async (ev) => {
   const addBeArgs = [eles[0].value, eles[1].checked];
 
   if (ppVal.length > 0) {
-    addBeArgs.push((await hexDigest('SHA-512', ppVal)));
+    addBeArgs.push(ppVal);
   }
 
   const addRes = await addBackend(addBeArgs, true);
