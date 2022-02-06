@@ -1,7 +1,7 @@
 'use strict';
 
 const BE_PIN_VER = config.backend.pinVer;
-const PP_HDR = config.backend.ppHeader;
+const PP_HDR = config.backend.header;
 let IAMFF = false; // only set if browser is Firefox
 
 let theRealBrowser;
@@ -17,15 +17,55 @@ try {
 }
 
 if (!crypto.subtle) {
-  crypto.subtle = { digest: async () => new Promise((res) => res("")) };
+  throw new Error('no SubtleCrypto!!');
+}
+
+const keyCache = {};
+
+const keyFromSpec = async (spec) => {
+  if (spec.length > 2 && spec[2].length > 0) {
+    const specStub = stubFromSpec(spec);
+
+    if (keyCache[specStub]) {
+      return keyCache[specStub];
+    }
+
+    const octetLen = spec[2].length / 2;
+
+    if (spec[2].length % 2) {
+      throw new Error('odd key length!');
+    }
+
+    // try to parse as an bigint, if it fails then it's not a number
+    BigInt(`0x${spec[2]}`);
+
+    const keyBuf = [...spec[2].matchAll(/[a-fA-F0-9]{2}/ig)]
+      .reduce((ab, x, i) => {
+        ab[i] = Number.parseInt(x, 16);
+        return ab;
+    }, new Uint8Array(octetLen));
+
+    return (keyCache[specStub] = await crypto.subtle.importKey(
+      'raw',
+      keyBuf,
+      {
+        name: 'HMAC',
+        hash: config.backend.hmacAlgo
+      },
+      false,
+      ['sign']
+    ));
+  }
+
+  return null;
 }
 
 const assetHost = config.assets.host;
 const assets = config.assets;
 const backends = {};
 
-const hexDigest = async (algo, payloadStr) => {
-  const digest = await crypto.subtle.digest(algo, new TextEncoder().encode(payloadStr));
+const generateHmac = async (spec, payloadStr) => {
+  const digest = await crypto.subtle.sign('HMAC', await keyFromSpec(spec), new TextEncoder().encode(payloadStr));
   return Array.from(new Uint8Array(digest))
     .map(b => b.toString(16).padStart(2, '0')).join('');
 };
@@ -36,17 +76,7 @@ const stubFromSpec = (spec) => {
 };
 
 const hlteFetch = async (endpoint, spec, payload = undefined, query = undefined) => {
-  const opts = { 
-    mode: 'cors',
-    cache: 'no-store',
-    headers: {
-      'Access-Control-Request-Headers': PP_HDR
-    }
-  };
-
-  if (spec.length > 2 && spec[2].length > 0) {
-    opts.headers[PP_HDR] = spec[2];
-  }
+  let opts = {};
 
   let uri = `${stubFromSpec(spec)}${endpoint}`;
   let params = new URLSearchParams();
@@ -56,30 +86,22 @@ const hlteFetch = async (endpoint, spec, payload = undefined, query = undefined)
   }
 
   if (payload) {
-    opts.method = 'POST';
-    opts.body = JSON.stringify(payload);
-    opts.headers['Content-Type'] = 'application/json';
+    opts = { 
+      mode: 'cors',
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Request-Headers': PP_HDR
+      },
+      method: 'POST',
+      body: JSON.stringify(payload),
+    };
 
-    const digest = await hexDigest('SHA-256', opts.body);
-    const curOpts = await hlteOptions();
-
-    if (!curOpts.formats) {
-      alert('Cannot save hilite as you\'ve not yet enabled any output format options.');
-      return;
+    if (!(spec.length > 2 && spec[2].length > 0)) {
+      throw new Error('bad spec in fetch!');
     }
-    
-    const curFormats = Object.keys(curOpts.formats).reduce((a, x) => {
-      if (x.indexOf('inf_') === 0 && curOpts.formats[x] === true) {
-        a.push(x.replace('inf_', ''));
-      }
-      return a;
-    }, []);
 
-    params.append('formats', curFormats);
-
-    if (digest.length == 64) {
-      params.append('checksum', digest);
-    }
+    opts.headers[PP_HDR] = await generateHmac(spec, opts.body);
   }
 
 
@@ -170,33 +192,7 @@ const hlteOptions = async (toSet = undefined) => {
   });
 };
 
-const availableFormats = async () => {
-  const formatsSet = new Set();
-
-  for (const be of Object.values(backends)) {
-    const [reachable, spec] = be;
-
-    if (!reachable) {
-      continue;
-    }
-
-    try {
-      const res = await hlteFetch('/formats', spec);
-
-      if (res.ok) {
-        (await res.json()).forEach(fmt => formatsSet.add(fmt));
-      } else {
-        throw `${stubFromSpec(spec)}/formats: HTTP status ${res.status}`;
-      }
-    } catch (err) {
-      logger.error(`formats req failed: ${err}`);
-    }
-  }
-
-  return [...formatsSet];
-};
-
-  // find an element in `curEle`'s children by 'data-id' attribute matching `dataId`
+// find an element in `curEle`'s children by 'data-id' attribute matching `dataId`
 const findChildByDataId = (dataId, curEle) => {
   let rList = [];
 

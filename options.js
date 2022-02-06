@@ -1,7 +1,5 @@
 'use strict';
 
-const InputCheckboxes = [];
-
 let statusIconTimeoutHandle;
 function setStatusIcon(toIcon, opts) {
   const imgEle = document.getElementById('logo_img');
@@ -29,22 +27,12 @@ function setStatusIcon(toIcon, opts) {
 }
 
 async function saveOptions() {
-  const settings = InputCheckboxes.reduce((a, settingId) => {
-    return { [settingId]: document.getElementById(settingId).checked, ...a };
-  }, {});
-
   const curOptions = await hlteOptions();
-  curOptions.formats = settings;
   curOptions.backends = backends;
   await hlteOptions(curOptions);
 
   setStatusIcon(assets.icons.ok, { timeout: 2500 });
 }
-
-const unlockAll = () => {
-  InputCheckboxes.forEach((ic) => document.getElementById(ic).disabled = false);
-  document.getElementById('save').disabled = false;
-};
 
 async function restoreOptions() {
   const allOpts = await hlteOptions();
@@ -73,34 +61,6 @@ async function contentLoaded(_) {
     setStatusIcon(assets.icons.error, { title: 'No backends found' });
   } else {
     document.getElementById('be_title').textContent = 'Registered backends:';
-
-    const formatCont = document.getElementById('local_formats');
-    const formatTmpl = document.getElementById('local_format_tmpl');
-    const formats = await availableFormats();
-
-    if (formats.length > 0) {
-      while (formatCont.firstChild) {
-        formatCont.removeChild(formatCont.firstChild);
-      }
-
-      formats.forEach((format) => {
-        const newNode = formatTmpl.cloneNode(true);
-        newNode.removeAttribute('id');
-
-        const checkbox = findChildByDataId('cbox', newNode);
-        const label = findChildByDataId('label', newNode);
-
-        checkbox.id = `inf_${format}`;
-        label.appendChild(document.createTextNode(format.toUpperCase()));
-        label.appendChild(checkbox);
-        InputCheckboxes.push(checkbox.id);
-
-        newNode.style.display = '';
-        formatCont.appendChild(newNode);
-      });
-
-      unlockAll();
-    }
 
     const beList = document.getElementById('backend_list');
 
@@ -220,8 +180,6 @@ async function contentLoaded(_) {
     errorUp();
   }
 }
-
-addOurClickListener('save', async () => { await saveOptions(); });
 
 addOurClickListener('reset', async () => {
   Object.keys(backends).forEach(k => delete backends[k]);
