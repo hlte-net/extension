@@ -76,12 +76,16 @@ const stubFromSpec = (spec) => {
 };
 
 const hlteFetch = async (endpoint, spec, payload = undefined, query = undefined) => {
-  let opts = {};
+  let opts = { headers: {} };
 
   let uri = `${stubFromSpec(spec)}${endpoint}`;
   let params = new URLSearchParams();
 
   if (query) {
+    if (['/search'].includes(endpoint)) {
+      query['ts'] = Number(new Date());
+    }
+
     params = new URLSearchParams(query);
   }
 
@@ -107,6 +111,12 @@ const hlteFetch = async (endpoint, spec, payload = undefined, query = undefined)
 
   if (params.toString().length) {
     uri += `?${params.toString()}`;
+
+    if (!(spec.length > 2 && spec[2].length > 0)) {
+      throw new Error('bad spec in fetch!');
+    }
+
+    opts.headers[PP_HDR] = await generateHmac(spec, params.toString());
   }
   
   return fetch(uri, opts);
