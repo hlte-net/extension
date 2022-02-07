@@ -48,35 +48,30 @@
             <div><ol id="backend_list"></ol></div>
             <button id="add_be" type="submit">Add Backend</button>
           </div>
-
-          <div id="storage_formats" class="col-dir ctrl-box bordered">
-            <h3>Available Storage Formats:</h3>
-            <div id="local_formats">
+          
+          <div id="form_container_2" class="row-dir">
+            <div class="col-dir ctrl-box bordered">
+              <h3>Button Action:</h3>
+              <div class="row-dir">
+                <label for="bbb_toggle_annotate">
+                  <input id="bbb_toggle_annotate" name="bbb_toggle_group" value="search" type="radio" checked />
+                  Annotate
+                </label>
+              </div>
+              <div class="row-dir">
+                <label for="bbb_toggle_search">
+                  <input id="bbb_toggle_search" name="bbb_toggle_group" value="annotate" type="radio" checked />
+                  Search
+                </label>
+              </div>
             </div>
-
-            <button id="save" type="submit" disabled="true">Save</button>
-            <button id="reset" type="submit">Reset</button>
+            <div class="col-dir ctrl-box">
+            </div>
           </div>
         </div>
 
-        <div id="form_container_2" class="row-dir">
-          <div class="col-dir ctrl-box bordered">
-            <h3>Button Action:</h3>
-            <div class="row-dir">
-              <label for="bbb_toggle_annotate">
-                <input id="bbb_toggle_annotate" name="bbb_toggle_group" value="search" type="radio" checked />
-                Annotate
-              </label>
-            </div>
-            <div class="row-dir">
-              <label for="bbb_toggle_search">
-                <input id="bbb_toggle_search" name="bbb_toggle_group" value="annotate" type="radio" checked />
-                Search
-              </label>
-            </div>
-          </div>
-          <div class="col-dir ctrl-box">
-          </div>
+        <div id="storage_formats" class="col-dir ctrl-box bordered">
+          <button id="reset" type="submit">Reset</button>
         </div>
 
         <div id="err_show_box">

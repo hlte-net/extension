@@ -34,8 +34,9 @@ const config = {
     }
   },
   backend: {
-    pinVer: 20220111,
-    ppHeader: 'x-hlte-pp'
+    pinVer: 20220126,
+    header: 'x-hlte',
+    hmacAlgo: 'SHA-256'
   },
   styles: {
     light: '/light.css',
