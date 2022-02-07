@@ -75,18 +75,26 @@ const stubFromSpec = (spec) => {
   return `http${secure ? 's' : ''}://${hostStub}`;
 };
 
-const hlteFetch = async (endpoint, spec, payload = undefined, query = undefined) => {
-  let opts = { headers: {} };
+const protectEndpointQses = ['/search'];
 
+const hlteFetch = async (endpoint, spec, payload = undefined, query = undefined) => {
+  const protectedEp = payload || protectEndpointQses.includes(endpoint);
+  let opts = { headers: {} };
   let uri = `${stubFromSpec(spec)}${endpoint}`;
   let params = new URLSearchParams();
 
   if (query) {
-    if (['/search'].includes(endpoint)) {
+    // the timestamp we add here is not consumed by the backend: rather, it's used
+    // simply to add entropy to the query string when it is HMACed
+    if (protectedEp) {
       query['ts'] = Number(new Date());
     }
 
     params = new URLSearchParams(query);
+
+    if (params.toString().length) {
+      uri += `?${params.toString()}`;
+    }
   }
 
   if (payload) {
@@ -100,23 +108,14 @@ const hlteFetch = async (endpoint, spec, payload = undefined, query = undefined)
       method: 'POST',
       body: JSON.stringify(payload),
     };
-
-    if (!(spec.length > 2 && spec[2].length > 0)) {
-      throw new Error('bad spec in fetch!');
-    }
-
-    opts.headers[PP_HDR] = await generateHmac(spec, opts.body);
   }
 
-
-  if (params.toString().length) {
-    uri += `?${params.toString()}`;
-
+  if (protectedEp) {
     if (!(spec.length > 2 && spec[2].length > 0)) {
       throw new Error('bad spec in fetch!');
     }
 
-    opts.headers[PP_HDR] = await generateHmac(spec, params.toString());
+    opts.headers[PP_HDR] = await generateHmac(spec, payload ? opts.body : params.toString());
   }
   
   return fetch(uri, opts);
