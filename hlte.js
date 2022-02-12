@@ -145,12 +145,6 @@ const msgHandlers = {
       rmImgAnCont();
     });
 
-    const curOpts = await hlteOptions();
-    if (!curOpts.formats) {
-      but.textContent = 'Set format(s) in options to enable!';
-      but.disabled = true;
-    }
-
     const cncl = document.createElement('button');
     cncl.textContent = 'Cancel';
     cncl.addEventListener('click', rmImgAnCont);

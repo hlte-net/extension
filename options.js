@@ -37,15 +37,6 @@ async function saveOptions() {
 async function restoreOptions() {
   const allOpts = await hlteOptions();
 
-  if (allOpts.formats) {
-    Object.keys(allOpts.formats).forEach((settingId) => {
-      const ele = document.getElementById(settingId);
-      if (ele) {
-        ele.checked = allOpts.formats[settingId];
-      }
-    });
-  }
-
   if (allOpts.buttonAction) {
     document.getElementById(`bbb_toggle_${allOpts.buttonAction}`).checked = true;
   }

@@ -60,7 +60,7 @@ async function popupOnDOMContentLoaded() {
   
   await discoverBackends();
   const opts = await hlteOptions();
-  abled(isABackendReachable() && !!opts.formats);
+  abled(isABackendReachable());
 };
 
 document.addEventListener('DOMContentLoaded', sharedOnDOMContentLoaded.bind(null, popupOnDOMContentLoaded));
