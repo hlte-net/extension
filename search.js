@@ -45,10 +45,10 @@ async function keydownHandler (searchIn, e) {
           const foundMedia = Object.keys(mediaElements).reduce((a, k) => ({ [k]: 0, ...a }), {});
 
           for (const row of rJson) {
-            if (row.primaryURI) {
-              const pUriRes = await hlteFetch(`/${Date.now()}/${row.checksum}/${row.timestamp}`, beSpec[1]);
-              console.log(pUriRes);
-            }
+            const mediaExists = async (primary = true) => {
+              const uri = `/${Date.now()}/${row.checksum}/${row.timestamp}${!primary ? '/secondary' : ''}`;
+              return (await hlteFetch(uri, beSpec[1])).status === 204;
+            };
 
             const newRow = rowTmpl.cloneNode(true);
             const nrC = (cid) => findChildByDataId(cid, newRow);
@@ -58,7 +58,7 @@ async function keydownHandler (searchIn, e) {
             const pURL = new URL(row.primaryURI);
             const pLink = document.createElement('a');
             pLink.href = row.primaryURI;
-            pLink.textContent = pURL.hostname;
+            pLink.textContent = pURL.hostname + ` ${await mediaExists() ? '✔️' : '❌'}`;
             pLink.target = '_blank';
             nrC('srr_uris').appendChild(pLink);
 
@@ -66,7 +66,7 @@ async function keydownHandler (searchIn, e) {
               const sURL = new URL(row.secondaryURI);
               const sLink = document.createElement('a');
               sLink.href = row.secondaryURI;
-              sLink.textContent = `(${sURL.hostname})`;
+              sLink.textContent = `(${sURL.hostname} ${await mediaExists(false) ? '✔️' : '❌'})`;
               sLink.target = '_blank';
               nrC('srr_uris').appendChild(sLink);
 
