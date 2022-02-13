@@ -37,11 +37,11 @@ addOurClickListener('annotate_button', async () => {
   });
 });
 
-async function popupOnDOMContentLoaded() {
+async function popupOnDOMContentLoaded () {
   // if the user has selected text, automatically populate the annotation text area with it quoted
   theRealBrowser.tabs.query({ active: true }, async (t) => {
     const tId = t.find(x => x.active).id;
-    
+
     theRealBrowser.tabs.sendMessage(tId, { action: 'queryLastSelected' }, async (lsResp) => {
       if (!lsResp || theRealBrowser.runtime.lastError) {
         console.error(`queryLastSelected failed: ${JSON.stringify(theRealBrowser.runtime.lastError)}`);
@@ -57,10 +57,10 @@ async function popupOnDOMContentLoaded() {
       }
     });
   });
-  
+
   await discoverBackends();
   const opts = await hlteOptions();
   abled(isABackendReachable());
-};
+}
 
 document.addEventListener('DOMContentLoaded', sharedOnDOMContentLoaded.bind(null, popupOnDOMContentLoaded));

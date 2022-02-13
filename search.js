@@ -1,5 +1,5 @@
 const mediaElements = {
-  'video': (mURI, mRes) => {
+  video: (mURI, mRes) => {
     const nv = document.createElement('video');
     nv.src = mURI;
     nv.type = mRes.headers.get('content-type');
@@ -7,17 +7,17 @@ const mediaElements = {
     nv.muted = true;
     return nv;
   },
-  'image': (mURI) => {
+  image: (mURI) => {
     const img = document.createElement('img');
     img.src = mURI;
     return img;
   }
 };
 
-async function keydownHandler(searchIn, e) {
+async function keydownHandler (searchIn, e) {
   if (e.code === 'Enter') {
     searchIn.disabled = true;
-    document.getElementById('search_res_info').textContent = `Searching...`;
+    document.getElementById('search_res_info').textContent = 'Searching...';
     const srEle = document.getElementById('search_res');
 
     while (srEle.firstChild) {
@@ -32,7 +32,7 @@ async function keydownHandler(searchIn, e) {
         l: Number.parseInt(document.getElementById('limit_in').value),
         d: document.getElementById('newest_first_in').checked
       });
-    
+
       if (res.ok) {
         try {
           const rJson = await res.json();
@@ -44,8 +44,7 @@ async function keydownHandler(searchIn, e) {
           const rowTmpl = document.getElementById('search_res_row_tmpl');
           const foundMedia = Object.keys(mediaElements).reduce((a, k) => ({ [k]: 0, ...a }), {});
 
-          for (let row of rJson) {
-
+          for (const row of rJson) {
             if (row.primaryURI) {
               const pUriRes = await hlteFetch(`/${Date.now()}/${row.checksum}/${row.timestamp}`, beSpec[1]);
               console.log(pUriRes);
@@ -82,8 +81,7 @@ async function keydownHandler(searchIn, e) {
                   } else {
                     console.log(`Unhandled media type: ${row.primaryURI} -> ${mRes.headers.get('content-type')}`);
                   }
-                }
-                else {
+                } else {
                   logger.error(`failed to fetch media ${row.primaryURI}`);
                   console.dir(mRes);
                 }
@@ -102,7 +100,7 @@ async function keydownHandler(searchIn, e) {
             srEle.appendChild(newRow);
           }
 
-          document.getElementById('search_res_info').textContent = `${rJson.length} results ` + 
+          document.getElementById('search_res_info').textContent = `${rJson.length} results ` +
             ` -- ${Object.entries(foundMedia).map(([m, c]) => `${c} ${m}${c > 1 ? 's' : ''}`).join(', ')}` +
             ` -- ${Date.now() - startTs}ms`;
         } catch (err) {
@@ -115,7 +113,7 @@ async function keydownHandler(searchIn, e) {
   }
 }
 
-async function onContentLoaded(_) {
+async function onContentLoaded (_) {
   const searchIn = document.getElementById('search_in');
   searchIn.addEventListener('keydown', keydownHandler.bind(null, searchIn));
 

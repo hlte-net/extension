@@ -17,7 +17,7 @@ const annotateListener = async (info) => {
 
 const bgScriptMain = async () => {
   const curOpts = await hlteOptions();
-  let curCtxMenu = curOpts.buttonContextMenu || config.defaultButtonContextMenu;
+  const curCtxMenu = curOpts.buttonContextMenu || config.defaultButtonContextMenu;
   console.log('loading bg, curCtxMenu', curCtxMenu, curOpts);
   createButtonContextMenuFor(curCtxMenu);
 

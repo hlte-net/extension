@@ -8,7 +8,7 @@ const addControls = (isError = null) => {
   if (document.getElementById(contId)) {
     return;
   }
-  
+
   const cont = document.createElement('div');
   cont.id = contId;
   cont.style.position = 'fixed';
@@ -40,7 +40,7 @@ const addControls = (isError = null) => {
 
       imgReset();
       clearTimeout(timeoutDispHandle);
-      let tempIcon = assets.icons[(success ? 'ok' : 'error')];
+      const tempIcon = assets.icons[(success ? 'ok' : 'error')];
       imgEle.src = `${assetHost}/${tempIcon}`;
       iconHoldHandle = setTimeout(() => {
         clearTimeout(iconHoldHandle);
@@ -77,7 +77,7 @@ document.onselectstart = () => {
   document.onselectionchange = () => {
     clearTimeout(endHandle);
     endHandle = setTimeout(() => {
-      let cs = window.getSelection().toString();
+      const cs = window.getSelection().toString();
 
       if (cs.length === 0) {
         lastSelected = undefined;
@@ -85,8 +85,7 @@ document.onselectstart = () => {
         if (!iconHoldHandle) {
           hideControls();
         }
-      }
-      else if (cs != lastSelected) {
+      } else if (cs != lastSelected) {
         lastSelected = cs;
         addControls();
       }
@@ -121,7 +120,7 @@ const msgHandlers = {
     imgAnCont.style.background = 'rgba(211, 233, 243, 0.95)';
     imgAnCont.style.padding = '11px';
     imgAnCont.style.margin = '3px';
-    
+
     const ta = document.createElement('textarea');
     ta.style.margin = '0.5em 0 0.5em 0';
     ta.style.width = '95%';
@@ -149,7 +148,7 @@ const msgHandlers = {
     cncl.textContent = 'Cancel';
     cncl.addEventListener('click', rmImgAnCont);
 
-    imgAnCont.appendChild(document.createTextNode(`Annotation:`));
+    imgAnCont.appendChild(document.createTextNode('Annotation:'));
     imgAnCont.appendChild(document.createElement('br'));
     imgAnCont.appendChild(ta);
     imgAnCont.appendChild(document.createElement('br'));
@@ -159,7 +158,7 @@ const msgHandlers = {
         buttonCaptureHilite = lastSelected;
       }
 
-      imgAnCont.appendChild(document.createTextNode(`Including hilite:`));
+      imgAnCont.appendChild(document.createTextNode('Including hilite:'));
       const bq = document.createElement('blockquote');
       bq.style.margin = '0.5em 1.5em 0px';
       bq.style.fontFamily = 'monospace';
@@ -185,7 +184,7 @@ const msgHandlers = {
     const { action } = msg;
 
     if (action && action in msgHandlers) {
-      let handlerResp = await msgHandlers[action](msg);
+      const handlerResp = await msgHandlers[action](msg);
 
       if (handlerResp) {
         // firefox & chrome behave differently here:
@@ -195,8 +194,7 @@ const msgHandlers = {
         // to indicate the message channel must remain open after this listener returns.
         if (IAMFF) {
           return handlerResp;
-        }
-        else {
+        } else {
           sendResponse(handlerResp);
           return true; // tells the browser to retain/keep-open the channel
         }
@@ -210,6 +208,6 @@ const msgHandlers = {
     mouseLoc.x = ev.pageX;
     mouseLoc.y = ev.pageY;
   };
-  
+
   discoverBackends((failStr) => addControls(failStr));
 })();

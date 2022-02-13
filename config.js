@@ -17,7 +17,7 @@ const config = {
       width: 420,
       type: 'popup'
     },
-    titlePreface: 'hlte.net page annotation',
+    titlePreface: 'hlte.net page annotation'
   },
   defaultButtonContextMenu: 'search',
   assets: {

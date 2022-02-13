@@ -1,7 +1,7 @@
 'use strict';
 
 let statusIconTimeoutHandle;
-function setStatusIcon(toIcon, opts) {
+function setStatusIcon (toIcon, opts) {
   const imgEle = document.getElementById('logo_img');
   const ogSrc = imgEle.src;
   const { timeout, title } = opts;
@@ -9,11 +9,11 @@ function setStatusIcon(toIcon, opts) {
   imgEle.style.display = 'inline';
   imgEle.style.filter = 'grayscale(0)';
   imgEle.src = `${assetHost}/${toIcon}`;
-  
+
   if (title) {
     imgEle.title = title;
   }
-  
+
   clearTimeout(statusIconTimeoutHandle);
 
   if (!statusIconTimeoutHandle && timeout) {
@@ -26,7 +26,7 @@ function setStatusIcon(toIcon, opts) {
   }
 }
 
-async function saveOptions() {
+async function saveOptions () {
   const curOptions = await hlteOptions();
   curOptions.backends = backends;
   await hlteOptions(curOptions);
@@ -34,7 +34,7 @@ async function saveOptions() {
   setStatusIcon(assets.icons.ok, { timeout: 2500 });
 }
 
-async function restoreOptions() {
+async function restoreOptions () {
   const allOpts = await hlteOptions();
 
   if (allOpts.buttonAction) {
@@ -42,10 +42,10 @@ async function restoreOptions() {
   }
 }
 
-async function contentLoaded(_) {
+async function contentLoaded (_) {
   document.getElementById('be_title').textContent = 'Verifying backends...';
   const foundBes = await discoverBackends();
-  
+
   if (Object.keys(backends).length > 0 && !foundBes) {
     document.getElementById('form_container').style.display = 'none';
     document.getElementById('error_container').style.display = 'block';
@@ -208,7 +208,7 @@ addOurClickListener('add_be_submit', async (ev) => {
   const addRes = await addBackend(addBeArgs, true);
 
   hideAddBeDialog();
-  
+
   if (!addRes) {
     logger.error(`failed to add backend '${eles[0].value}'`);
     setStatusIcon(assets.icons.error, { timeout: 7500 });

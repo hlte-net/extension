@@ -43,7 +43,7 @@ const keyFromSpec = async (spec) => {
       .reduce((ab, x, i) => {
         ab[i] = Number.parseInt(x, 16);
         return ab;
-    }, new Uint8Array(octetLen));
+      }, new Uint8Array(octetLen));
 
     return (keyCache[specStub] = await crypto.subtle.importKey(
       'raw',
@@ -58,7 +58,7 @@ const keyFromSpec = async (spec) => {
   }
 
   return null;
-}
+};
 
 const assetHost = config.assets.host;
 const assets = config.assets;
@@ -91,7 +91,7 @@ const hlteFetch = async (endpoint, spec, payload = undefined, query = undefined,
     // the timestamp we add here is not consumed by the backend: rather, it's used
     // simply to add entropy to the query string when it is HMACed
     if (protectedEp) {
-      query['ts'] = Number(new Date());
+      query.ts = Number(new Date());
     }
 
     params = new URLSearchParams(query);
@@ -102,7 +102,7 @@ const hlteFetch = async (endpoint, spec, payload = undefined, query = undefined,
   }
 
   if (payload) {
-    opts = { 
+    opts = {
       mode: 'cors',
       cache: 'no-store',
       headers: {
@@ -110,7 +110,7 @@ const hlteFetch = async (endpoint, spec, payload = undefined, query = undefined,
         'Access-Control-Request-Headers': PP_HDR
       },
       method: 'POST',
-      body: JSON.stringify(payload),
+      body: JSON.stringify(payload)
     };
   }
 
@@ -119,14 +119,13 @@ const hlteFetch = async (endpoint, spec, payload = undefined, query = undefined,
       throw new Error('bad spec in fetch!');
     }
 
-    let protected = opts.body;
+    let protectedBody = opts.body;
 
     if (!payload) {
       if (protectQueryStringEps.includes(endpoint)) {
-        protected = params.toString();
-      }
-      else {
-        protected = new URL(uri).pathname;
+        protectedBody = params.toString();
+      } else {
+        protectedBody = new URL(uri).pathname;
 
         if (headIfRootGet) {
           opts.method = 'HEAD';
@@ -134,9 +133,9 @@ const hlteFetch = async (endpoint, spec, payload = undefined, query = undefined,
       }
     }
 
-    opts.headers[PP_HDR] = await generateHmac(spec, protected);
+    opts.headers[PP_HDR] = await generateHmac(spec, protectedBody);
   }
-  
+
   return fetch(uri, opts);
 };
 
@@ -176,7 +175,7 @@ const addBackend = async (spec, failIfCannotConnect = false) => {
   }
 
   return (backends[hStub] = [verOk, spec]);
-}
+};
 
 const discoverBackends = async (onFailure) => {
   const opts = await hlteOptions();
@@ -211,7 +210,7 @@ const hlteOptions = async (toSet = undefined) => {
       theRealBrowser.storage.sync.clear();
       return;
     }
-    
+
     if (toSet === undefined) {
       theRealBrowser.storage.sync.get(null, (allSettings) => resolve(allSettings));
     } else {
@@ -222,7 +221,7 @@ const hlteOptions = async (toSet = undefined) => {
 
 // find an element in `curEle`'s children by 'data-id' attribute matching `dataId`
 const findChildByDataId = (dataId, curEle) => {
-  let rList = [];
+  const rList = [];
 
   if ('id' in curEle.dataset && curEle.dataset.id === dataId) {
     rList.push(curEle);
@@ -241,7 +240,7 @@ const findChildByDataId = (dataId, curEle) => {
 };
 
 const logger = new class {
-  constructor() {
+  constructor () {
     this._onErr = undefined;
     this._logs = {};
     this._lvls = {
@@ -253,7 +252,7 @@ const logger = new class {
     Object.keys(this._lvls).forEach((lvl) => this[lvl] = this._log.bind(this, lvl));
   }
 
-  _log(lvl, msg) {
+  _log (lvl, msg) {
     if (!this._lvls[lvl]) {
       throw `bad log level '${lvl}'`;
     }
@@ -270,11 +269,11 @@ const logger = new class {
     }
   }
 
-  onError(cb) {
+  onError (cb) {
     this._onErr = cb;
   }
 
-  errors() {
+  errors () {
     return this._logs.error;
   }
 }();
@@ -289,8 +288,8 @@ const addOurClickListener = async (elementId, listener, defPrevent = true) => {
   });
 };
 
-function buildPayload(hiliteText, annotation, from, secondaryUrl) {
-  let loc = from || window.location;
+function buildPayload (hiliteText, annotation, from, secondaryUrl) {
+  const loc = from || window.location;
 
   const payload = {
     data: hiliteText,
@@ -303,11 +302,11 @@ function buildPayload(hiliteText, annotation, from, secondaryUrl) {
   return payload;
 }
 
-async function postToBackends(hiliteText, annotation, from, secondaryUrl) {
+async function postToBackends (hiliteText, annotation, from, secondaryUrl) {
   return postPayloadToBackends((await buildPayload(hiliteText, annotation, from, secondaryUrl)));
 }
 
-async function postPayloadToBackends(payload) {
+async function postPayloadToBackends (payload) {
   let successes = 0;
   for (const beEnt of Object.entries(backends)) {
     const [beHostStub, beSpec] = beEnt;
@@ -332,15 +331,15 @@ async function postPayloadToBackends(payload) {
   return successes > 0;
 }
 
-async function toggleTheme(setSpecific = undefined) {
-  let styleLink = document.getElementById('style_link');
+async function toggleTheme (setSpecific = undefined) {
+  const styleLink = document.getElementById('style_link');
 
   if (!styleLink) {
     console.error('style link');
     return;
   }
-  
-  let styleURL = new URL(styleLink.href);
+
+  const styleURL = new URL(styleLink.href);
   let toSet = styleURL.pathname === config.styles.light ? config.styles.dark : config.styles.light;
 
   if (setSpecific && (Object.values(config.styles).indexOf(setSpecific) !== -1)) {
@@ -348,7 +347,7 @@ async function toggleTheme(setSpecific = undefined) {
   }
 
   styleLink.href = `${styleURL.origin}${toSet}`;
-  let opts = await hlteOptions();
+  const opts = await hlteOptions();
   opts.theme = toSet;
   await hlteOptions(opts);
 }
@@ -357,23 +356,23 @@ const logIfError = (msg) => {
   if (theRealBrowser.runtime.lastError) {
     console.error(`Error "${msg}": `, theRealBrowser.runtime.lastError);
   }
-}
+};
 
 let ctxMenuActionHandle, ctxWindowHandle;
 
 const ctxMenuCreateTmpls = {
   annotate: {
-    title: "Annotate...",
-    id: "ann_ctx_menu"
+    title: 'Annotate...',
+    id: 'ann_ctx_menu'
   },
   search: {
-    title: "Search...",
-    id: "srch_ctx_menu"
+    title: 'Search...',
+    id: 'srch_ctx_menu'
   }
 };
 
 let reloadHandle;
-async function createReloadCtxMenu() {
+async function createReloadCtxMenu () {
   if (reloadHandle) {
     await theRealBrowser.contextMenus.remove(reloadHandle);
   }
@@ -388,7 +387,7 @@ async function createReloadCtxMenu() {
 }
 
 let optsHandle;
-async function createOptionsCtxMenu() {
+async function createOptionsCtxMenu () {
   if (optsHandle) {
     await theRealBrowser.contextMenus.remove(optsHandle);
   }
@@ -402,7 +401,7 @@ async function createOptionsCtxMenu() {
   }, logIfError.bind(null, 'options'));
 }
 
-async function createButtonContextMenuFor(action) {
+async function createButtonContextMenuFor (action) {
   let createSpec = ctxMenuCreateTmpls[action];
 
   if (!createSpec) {
@@ -439,7 +438,7 @@ async function createButtonContextMenuFor(action) {
     }
   });
 
-  ctxMenuActionHandle = await theRealBrowser.contextMenus.create(createSpec, 
+  ctxMenuActionHandle = await theRealBrowser.contextMenus.create(createSpec,
     logIfError.bind(null, `createContextMenuFor(${action})`));
 
   await theRealBrowser.browserAction.setPopup({
@@ -455,30 +454,30 @@ async function createButtonContextMenuFor(action) {
   await hlteOptions(curOpts);
 }
 
-async function sharedOnDOMContentLoaded(onLoaded) {
-  let verBox = document.getElementById('ver_box');
+async function sharedOnDOMContentLoaded (onLoaded) {
+  const verBox = document.getElementById('ver_box');
   if (verBox) {
     verBox.textContent = `${theRealBrowser.runtime.getManifest().version} / ${BE_PIN_VER}`;
   }
 
-  let ttBut = document.getElementById('theme_toggle_button');
+  const ttBut = document.getElementById('theme_toggle_button');
   if (ttBut) {
     ttBut.addEventListener('click', toggleTheme);
   }
 
-  let optsBut = document.getElementById('open_options_button');
+  const optsBut = document.getElementById('open_options_button');
   if (optsBut) {
     optsBut.addEventListener('click', () => theRealBrowser.runtime.openOptionsPage());
   }
 
-  let opts = await hlteOptions();
+  const opts = await hlteOptions();
 
   if (opts.theme) {
     await toggleTheme(opts.theme);
   }
 
   try {
-    let foundBackends = await discoverBackends(console.error);
+    const foundBackends = await discoverBackends(console.error);
     onLoaded(foundBackends);
   } catch (err) {
     console.log('sharedOnDOMContentLoaded', err);
