@@ -75,10 +75,14 @@ const stubFromSpec = (spec) => {
   return `http${secure ? 's' : ''}://${hostStub}`;
 };
 
-const protectEndpointQses = ['/search'];
+const protectQueryStringEps = ['/search'];
+const protectEndpointQses = [
+  (ep) => protectQueryStringEps.includes(ep),
+  (ep) => ep.match(/\/\d+\/[0-9a-f]+\/\d+/)
+];
 
-const hlteFetch = async (endpoint, spec, payload = undefined, query = undefined) => {
-  const protectedEp = payload || protectEndpointQses.includes(endpoint);
+const hlteFetch = async (endpoint, spec, payload = undefined, query = undefined, headIfRootGet = true) => {
+  const protectedEp = payload || protectEndpointQses.some((epCheckFunc) => epCheckFunc(endpoint));
   let opts = { headers: {} };
   let uri = `${stubFromSpec(spec)}${endpoint}`;
   let params = new URLSearchParams();
@@ -115,7 +119,22 @@ const hlteFetch = async (endpoint, spec, payload = undefined, query = undefined)
       throw new Error('bad spec in fetch!');
     }
 
-    opts.headers[PP_HDR] = await generateHmac(spec, payload ? opts.body : params.toString());
+    let protected = opts.body;
+
+    if (!payload) {
+      if (protectQueryStringEps.includes(endpoint)) {
+        protected = params.toString();
+      }
+      else {
+        protected = new URL(uri).pathname;
+
+        if (headIfRootGet) {
+          opts.method = 'HEAD';
+        }
+      }
+    }
+
+    opts.headers[PP_HDR] = await generateHmac(spec, protected);
   }
   
   return fetch(uri, opts);

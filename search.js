@@ -41,11 +41,16 @@ async function keydownHandler(searchIn, e) {
             document.getElementById('search_res_info').textContent = 'No results found!';
             continue;
           }
-
           const rowTmpl = document.getElementById('search_res_row_tmpl');
           const foundMedia = Object.keys(mediaElements).reduce((a, k) => ({ [k]: 0, ...a }), {});
 
           for (let row of rJson) {
+
+            if (row.primaryURI) {
+              const pUriRes = await hlteFetch(`/${Date.now()}/${row.checksum}/${row.timestamp}`, beSpec[1]);
+              console.log(pUriRes);
+            }
+
             const newRow = rowTmpl.cloneNode(true);
             const nrC = (cid) => findChildByDataId(cid, newRow);
             newRow.removeAttribute('id');
