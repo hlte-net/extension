@@ -3,8 +3,6 @@
 // Import config and shared utilities via importScripts
 importScripts('config.js', 'shared.js');
 
-let annotateHandle;
-
 const annotateListener = async (info, tab) => {
   const { pageUrl, srcUrl } = info;
   const msgObj = { action: 'annotateMedia', pageUrl, srcUrl };
