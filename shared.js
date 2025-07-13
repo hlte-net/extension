@@ -361,7 +361,7 @@ async function createReloadCtxMenu() {
 
   reloadHandle = await theRealBrowser.contextMenus.create({
     title: 'Reload',
-    contexts: ['browser_action'],
+    contexts: ['action'],
     visible: true,
     id: 'reload_ctx',
     onclick: () => theRealBrowser.runtime.reload()
@@ -376,7 +376,7 @@ async function createOptionsCtxMenu() {
 
   optsHandle = await theRealBrowser.contextMenus.create({
     title: 'Options...',
-    contexts: ['browser_action'],
+    contexts: ['action'],
     visible: true,
     id: 'opts_ctx',
     onclick: () => theRealBrowser.runtime.openOptionsPage()
@@ -400,7 +400,7 @@ async function createButtonContextMenuFor(action) {
   }
 
   createSpec = Object.assign(createSpec, {
-    contexts: ['browser_action'],
+    contexts: ['action'],
     visible: true,
     onclick: async () => {
       const cfg = config[action];
@@ -423,8 +423,8 @@ async function createButtonContextMenuFor(action) {
   ctxMenuActionHandle = await theRealBrowser.contextMenus.create(createSpec, 
     logIfError.bind(null, `createContextMenuFor(${action})`));
 
-  await theRealBrowser.browserAction.setPopup({
-    popup: theRealBrowser.extension.getURL((action === 'search' ? 'popup' : 'search') + '.html')
+  await theRealBrowser.action.setPopup({
+    popup: theRealBrowser.runtime.getURL((action === 'search' ? 'popup' : 'search') + '.html')
   });
 
   await createOptionsCtxMenu();

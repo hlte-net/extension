@@ -1,7 +1,7 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "hlte.net",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "hlte.net browser extension",
   "author": "Electric Sheep Co.",
   "homepage_url": "https://hlte.net",
@@ -21,22 +21,21 @@
     }
   ],
   "background": {
-    "scripts": ["config.js", "shared.js", "bg.js"],
-    "persistent": true
+    "service_worker": "service-worker.js"
   },
   "permissions": [
-    "*://*/*",
-    "webRequest",
     "storage",
     "tabs",
     "contextMenus",
-    "activeTab"
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "*://*/*"
   ],
   "options_ui": {
     "page": "options.html",
-    "open_in_tab": false,
-    "chrome_style": true,
-    "browser_style": true
+    "open_in_tab": false
   },
   "browser_specific_settings": {
     "gecko": {
@@ -44,16 +43,16 @@
       "strict_min_version": "58.0"
     }
   },
-  "browser_action": {
+  "action": {
     "default_icon": {
       "32": "icons/icons8-crayon-32-blueedit.png"
     },
-    "default_popup": "popup.html",
-    "browser_style": true
+    "default_popup": "popup.html"
   },
   "web_accessible_resources": [
-    "icons/*.png",
-    "*.css",
-    "*.js"
+    {
+      "resources": ["icons/*.png", "*.css", "*.js"],
+      "matches": ["*://*/*"]
+    }
   ]
 }
