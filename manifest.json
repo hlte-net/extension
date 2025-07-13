@@ -21,7 +21,8 @@
     }
   ],
   "background": {
-    "service_worker": "service-worker.js"
+    "service_worker": "service-worker.js",
+    "scripts": ["config.js", "shared.js", "bg.js"]
   },
   "permissions": [
     "storage",
